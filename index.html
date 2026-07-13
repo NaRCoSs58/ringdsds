@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
-
-<head>
-    <meta charset="UTF-8">
+<!-- saved from url=(0020)https://ring0.store/ -->
+<html lang="tr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>body {transition: opacity ease-in 0.2s; } 
+body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } 
+</style>
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ring 0 Private | Undetected Products</title>
     <style>
@@ -800,18 +801,140 @@
                 max-width: none;
             }
         }
+
+        /* İstatistik Sayacı Stilleri */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin: 50px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, rgba(13, 13, 25, 0.7), rgba(7, 7, 15, 0.7));
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 30px 20px;
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stat-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.15);
+        }
+
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff, #c7d2fe, #6366f1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Canlı Durum Paneli Stilleri */
+        .status-container {
+            margin: 50px 0;
+        }
+
+        .status-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            letter-spacing: -0.3px;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        /* Canlı Aktivite Toast Bildirimi Stilleri */
+        .activity-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: linear-gradient(135deg, rgba(10, 10, 18, 0.95), rgba(5, 5, 10, 0.95));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: 20px;
+            padding: 16px 20px;
+            max-width: 320px;
+            z-index: 15000;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transform: translateX(-150%);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .activity-toast.show {
+            transform: translateX(0);
+        }
+
+        .activity-icon {
+            background: rgba(99, 102, 241, 0.15);
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: #6366f1;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-bottom: 2px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .activity-text {
+            font-size: 0.82rem;
+            color: #ffffff;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        @media (max-width: 800px) {
+            .activity-toast {
+                left: 15px;
+                right: 15px;
+                max-width: none;
+                bottom: 90px;
+            }
+        }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="./Ring 0 Private _ Undetected Products_files/css2" rel="stylesheet">
 </head>
 
 <body>
 
-    <canvas id="bg-canvas"></canvas>
-    <div class="cursor-glow"></div>
-    <div class="cursor-dot"></div>
+    <canvas id="bg-canvas" width="1920" height="953"></canvas>
+    <div class="cursor-glow" style="left: 1658px; top: 40px; transform: translate(-50%, -50%) scale(1);"></div>
+    <div class="cursor-dot" style="left: 1658px; top: 40px;"></div>
 
-    <div id="loader">
+    <div id="loader" class="hidden" style="display: none;">
         <div class="loader-brand">RING 0 PRIVATE</div>
         <div class="loader-bar-container">
             <div class="loader-bar-progress"></div>
@@ -823,31 +946,77 @@
             <div class="logo">RING 0 PRIVATE</div>
         </div>
         <div class="nav-links">
-            <a href="#" id="policyNavLink">MÜŞTERİ POLİTİKASI</a>
+            <a href="https://ring0.store/#" id="policyNavLink">MÜŞTERİ POLİTİKASI</a>
         </div>
     </div>
 
-    <div class="wrapper" id="mainWrapper">
+    <div class="wrapper visible" id="mainWrapper">
         <div class="hero">
-            <div class="hero-badge" id="heroBadge">UNDETECTED</div>
             <h1 class="hero-title">RING 0 PRIVATE</h1>
             <div class="payment-methods"></div>
         </div>
 
+        <!-- İstatistik Sayacı -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" data-target="1250">0</div>
+                <div class="stat-label" id="stat1Label">MUTLU MÜŞTERİ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-target="4300">0</div>
+                <div class="stat-label" id="stat2Label">YASAKLAMA KALDIRILDI</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="statSupport">24/7</div>
+                <div class="stat-label" id="stat3Label">AKTİF DESTEK</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" data-target="99" data-suffix="%">0%</div>
+                <div class="stat-label" id="stat4Label">BAŞARI ORANI</div>
+            </div>
+        </div>
 
 
-        <div class="products-grid" id="productsGrid"></div>
 
+        <div class="products-grid" id="productsGrid"><div class="product-card">
+                <div class="product-name">SPOOFER</div>
+                <div class="price-row"><span class="price-tag">Onetime: 800 TL</span><span class="price-tag">Lifetime: 1300 TL</span></div>
+                <button class="detail-btn" onclick="showProductModal(&#39;spoofer&#39;)">DETAYLAR</button>
+            </div><div class="product-card">
+                <div class="product-name">SPOOFER PRIVATE</div>
+                <div class="price-row"><span class="price-tag">Onetime: 1000 TL</span><span class="price-tag">Lifetime: 2000 TL</span></div>
+                <button class="detail-btn" onclick="showProductModal(&#39;spooferpriv&#39;)">DETAYLAR</button>
+            </div><div class="product-card">
+                <div class="product-name">VAL-EMULATOR</div>
+                <div class="price-row"><span class="price-tag">1 Day: 300 TL</span><span class="price-tag">3 Day: 750 TL</span><span class="price-tag">7 Day: 1400 TL</span><span class="price-tag">15 Day: 1900 TL</span><span class="price-tag">30 Day: 3300 TL</span></div>
+                <button class="detail-btn" onclick="showProductModal(&#39;valemu&#39;)">DETAYLAR</button>
+            </div></div>
 
+        <!-- Canlı Durum Paneli -->
+        <div class="status-container">
+            <h3 class="status-title" id="statusWidgetTitle">SİSTEM DURUMU</h3>
+            <div class="status-widget" style="margin-top: 15px; margin-bottom: 15px;">
+                <div class="service-row">
+                    <span>SPOOFER</span>
+                    <span class="online" id="statusSpoofer">AKTİF / UNDETECTED</span>
+                </div>
+                <div class="service-row">
+                    <span>SPOOFER PRIVATE</span>
+                    <span class="online" id="statusSpooferPriv">AKTİF / UNDETECTED</span>
+                </div>
+                <div class="service-row" style="border-bottom: none;">
+                    <span>VAL-EMULATOR</span>
+                    <span class="online" id="statusValemu">AKTİF / UNDETECTED</span>
+                </div>
+            </div>
+        </div>
 
         <div>
             <h3 style="margin-bottom: 15px; font-size: 1.3rem; letter-spacing: -0.3px;" id="vouchesTitle">MÜŞTERİ
                 YORUMLARI</h3>
         </div>
         <div class="vouches-marquee">
-            <div class="vouches-track" id="vouchesTrack">
-                <!-- Vouchlar loadVouches() fonksiyonu ile dinamik yüklenecek -->
-            </div>
+            <div class="vouches-track" id="vouchesTrack"><div class="vouches-group"><div class="vouch-card"><div class="vouch-text">&lt;@943491099547275264&gt; bir geri bildirim gönderdi.  📊 Genel Puan ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10) YENİ DEĞERLENDİRME ⭐⭐⭐⭐⭐ (5/5) ⭐⭐⭐⭐⭐ (5/5) Neo tabıkıde ```text bu...</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">&lt;@546258540092981248&gt; bir geri bildirim gönderdi.  📊 Genel Puan ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10) YENİ DEĞERLENDİRME ⭐⭐⭐⭐⭐ (5/5) ⭐⭐⭐⭐⭐ (5/5) NEO ```text UFAK BİR SO...</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">&lt;@1041772307275853904&gt; bir geri bildirim gönderdi.  📊 Genel Puan ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10) YENİ DEĞERLENDİRME ⭐⭐⭐⭐⭐ (5/5) ⭐⭐⭐⭐⭐ (5/5) neo Umut ```text hızlı...</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">&lt;@526842731478253571&gt; bir geri bildirim gönderdi.  📊 Genel Puan ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10) YENİ DEĞERLENDİRME ⭐⭐⭐⭐⭐ (5/5) ⭐⭐⭐⭐⭐ (5/5) Neo ```text Neo kardeşi...</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">&lt;@400248481866055701&gt; bir geri bildirim gönderdi.  📊 Genel Puan ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10) YENİ DEĞERLENDİRME ⭐⭐⭐⭐⭐ (5/5) ⭐⭐⭐⭐⭐ (5/5) Neo ```text ben yetkili...</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">&lt;@1508988150037348423&gt; bir geri bildirim gönderdi.  📊 Genel Puan ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10) YENİ DEĞERLENDİRME ⭐⭐⭐⭐⭐ (5/5) ⭐⭐⭐⭐⭐ (5/5) @neo ```text Diğer fir...</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">&lt;@800029695214878771&gt; bu adam büyük adam 😄</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">&lt;@800029695214878771&gt; işinin adamıı bu kadar fıyata boyle urunler bulamazsınız beyler &lt;#1494838686926377050&gt;  +rep</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">guzel hıle van 152 kalktı tesekkurler</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">ON NUMARA GECENİN BU SAATİNDE BİLE İŞ BAŞINDALAR HERKEZE TAVSİYE EDERİM GÖNÜL RAHATLIĞI İLE ALIŞVERİŞİNİZİ YAPABİLİRSİNİZ</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">😁 🔥 &lt;#1495180453756403903&gt;</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">Neo kardesimin eline saglik 5 dk icinde kaldirdi banimizi</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">Sorunsuz Bansız ÇOK İYİ ❤️</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">alıcak herkese öneririm çok iyi bir hizmet var bi sorun olduğunda 10 dk içinde geri dönüş yapılıyor alıcaklara kesin tavsiyemdir</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">seriallerim değişti hepsi</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">+rep her şeferinde çok yardımcı oluyor &lt;@800029695214878771&gt;</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">çok iyi banım açıldı evsana bişi</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">&lt;@800029695214878771&gt;  yardımlarından dolayı çok teşekkür ederim kesinlikle tavsiye ediyorum</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">çok teşekkür ederim banım kalktı tavsiye ederim kesinlikle 🙂 💕</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">&lt;@800029695214878771&gt;  van 152 kalktı ticket'te çok iyi yardımcı oluyorlar herkese tavsiye ederim</div><div class="stars">★★★★★</div></div></div><div class="vouches-group"><div class="vouch-card"><div class="vouch-text">&lt;@943491099547275264&gt; bir geri bildirim gönderdi.  📊 Genel Puan ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10) YENİ DEĞERLENDİRME ⭐⭐⭐⭐⭐ (5/5) ⭐⭐⭐⭐⭐ (5/5) Neo tabıkıde ```text bu...</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">&lt;@546258540092981248&gt; bir geri bildirim gönderdi.  📊 Genel Puan ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10) YENİ DEĞERLENDİRME ⭐⭐⭐⭐⭐ (5/5) ⭐⭐⭐⭐⭐ (5/5) NEO ```text UFAK BİR SO...</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">&lt;@1041772307275853904&gt; bir geri bildirim gönderdi.  📊 Genel Puan ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10) YENİ DEĞERLENDİRME ⭐⭐⭐⭐⭐ (5/5) ⭐⭐⭐⭐⭐ (5/5) neo Umut ```text hızlı...</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">&lt;@526842731478253571&gt; bir geri bildirim gönderdi.  📊 Genel Puan ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10) YENİ DEĞERLENDİRME ⭐⭐⭐⭐⭐ (5/5) ⭐⭐⭐⭐⭐ (5/5) Neo ```text Neo kardeşi...</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">&lt;@400248481866055701&gt; bir geri bildirim gönderdi.  📊 Genel Puan ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10) YENİ DEĞERLENDİRME ⭐⭐⭐⭐⭐ (5/5) ⭐⭐⭐⭐⭐ (5/5) Neo ```text ben yetkili...</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">&lt;@1508988150037348423&gt; bir geri bildirim gönderdi.  📊 Genel Puan ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ (10/10) YENİ DEĞERLENDİRME ⭐⭐⭐⭐⭐ (5/5) ⭐⭐⭐⭐⭐ (5/5) @neo ```text Diğer fir...</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">&lt;@800029695214878771&gt; bu adam büyük adam 😄</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">&lt;@800029695214878771&gt; işinin adamıı bu kadar fıyata boyle urunler bulamazsınız beyler &lt;#1494838686926377050&gt;  +rep</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">guzel hıle van 152 kalktı tesekkurler</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">ON NUMARA GECENİN BU SAATİNDE BİLE İŞ BAŞINDALAR HERKEZE TAVSİYE EDERİM GÖNÜL RAHATLIĞI İLE ALIŞVERİŞİNİZİ YAPABİLİRSİNİZ</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">😁 🔥 &lt;#1495180453756403903&gt;</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">Neo kardesimin eline saglik 5 dk icinde kaldirdi banimizi</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">Sorunsuz Bansız ÇOK İYİ ❤️</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">alıcak herkese öneririm çok iyi bir hizmet var bi sorun olduğunda 10 dk içinde geri dönüş yapılıyor alıcaklara kesin tavsiyemdir</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">seriallerim değişti hepsi</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">+rep her şeferinde çok yardımcı oluyor &lt;@800029695214878771&gt;</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">çok iyi banım açıldı evsana bişi</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">&lt;@800029695214878771&gt;  yardımlarından dolayı çok teşekkür ederim kesinlikle tavsiye ediyorum</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">çok teşekkür ederim banım kalktı tavsiye ederim kesinlikle 🙂 💕</div><div class="stars">★★★★★</div></div><div class="vouch-card"><div class="vouch-text">&lt;@800029695214878771&gt;  van 152 kalktı ticket'te çok iyi yardımcı oluyorlar herkese tavsiye ederim</div><div class="stars">★★★★★</div></div></div></div>
         </div>
 
         <div class="contact-bar" style="justify-content: center;">
@@ -860,8 +1029,7 @@
         <div class="modal-content">
             <h3 id="policyModalTitle" style="color: #ffffff; margin-bottom: 20px; font-size: 1.4rem;">⚖️ MÜŞTERİ
                 KURALLARI VE SATIŞ SÖZLEŞMESİ</h3>
-            <div id="policyModalText"
-                style="color: #94a3b8; font-size: 0.9rem; line-height: 1.6; max-height: 55vh; overflow-y: auto; padding-right: 10px;">
+            <div id="policyModalText" style="color: #94a3b8; font-size: 0.9rem; line-height: 1.6; max-height: 55vh; overflow-y: auto; padding-right: 10px;">
                 <p>Sunucumuzdan ürün satın alan her kullanıcı, aşağıdaki maddeleri okumuş ve kabul etmiş sayılır.</p>
                 <br>
                 <p><strong style="color: #ffffff;">1. Kullanım ve Sorumluluk</strong><br>
@@ -893,13 +1061,12 @@
                     Oyun güncellemeleri geldiğinde yazılımlar güvenliğiniz için bakıma alınabilir. Bakım süreleri
                     boyunca sabırlı olmanız beklenir. Uzun süreli bakımlarda (24 saat üzeri) genellikle süre telafisi
                     yapılmaktadır, müşterilerimiz bu süre boyunca beklemek zorundadır.</p><br>
-                <p
-                    style="color: #ef4444; background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2);">
+                <p style="color: #ef4444; background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2);">
                     <strong>❗ Önemli Hatırlatma:</strong> Kurallara uymayan kullanıcıların lisansları, ücret iadesi
                     yapılmaksızın askıya alınma hakkına sahiptir.
                 </p>
             </div>
-            <button class="close-modal-btn" onclick="closeModal('policyModal')" id="policyCloseBtn">KAPAT</button>
+            <button class="close-modal-btn" onclick="closeModal(&#39;policyModal&#39;)" id="policyCloseBtn">KAPAT</button>
         </div>
     </div>
 
@@ -909,31 +1076,34 @@
             spoofer: {
                 name: "SPOOFER",
                 functions: ["VAN 152 Bypass", "No Reinstall Required", "BIOS Update Required"],
-                specs: ["All CPU & GPU Support", "All Motherboard Support", "Win 10/11 Support", "Hvci On/Off", "Tpm On/Off", "Secure Boot On/Off"],
+                specs: ["All CPU & GPU Support", "All Motherboard Support", "Win 10 Support", "Hvci On/Off", "Tpm On/Off", "Secure Boot On/Off"],
                 misc: ["Anti-Van 152"],
                 prices: [
-                    { title: "Onetime", priceTRY: 800, priceUSD: 24, link: "https://www.shopier.com/ring0/46287599" },
-                    { title: "Lifetime", priceTRY: 1300, priceUSD: 39, link: "https://www.shopier.com/ring0/46287646" }
+                    { title: "Onetime", priceTRY: 800, priceUSD: 24, link: "" },
+                    { title: "Lifetime", priceTRY: 1300, priceUSD: 39, link: "" }
                 ]
             },
-            oneclick: {
-                name: "ONECLICK",
-                functions: ["VAN 152 Bypass", "VAL 5 Bypass", "No Reinstall Required", "No BIOS Update Required", "No Game Reinstall Required"],
-                specs: ["All CPU & GPU Support", "All Motherboard Support", "Only Win 10 Support", "Hvci Off", "Tpm On/Off", "Secure Boot Off"],
-                misc: ["Anti Van 152", "Anti Val 5", "Get Unbannable Pc"],
+            spooferpriv: {
+                name: "SPOOFER PRIVATE",
+                functions: ["VAN 152 Bypass", "Val 5 Bypass", "Reinstall Required", "BIOS Update Required"],
+                specs: ["All CPU & GPU Support", "All Motherboard Support", "Win 10 Support", "Hvci Off", "Tpm Off", "Secure Boot Off"],
+                misc: ["Anti-Van 152", "Anti-Val 5"],
                 prices: [
-                    { title: "1 Days", priceTRY: 1000, priceUSD: 30, link: "https://www.shopier.com/ring0/47883820" },
-                    { title: "Weekly", priceTRY: 1500, priceUSD: 45, link: "https://www.shopier.com/ring0/47883886" },
-                    { title: "Lifetime", priceTRY: 3000, priceUSD: 90, link: "https://www.shopier.com/ring0/47883898" }
+                    { title: "Onetime", priceTRY: 1000, priceUSD: 30, link: "" },
+                    { title: "Lifetime", priceTRY: 2000, priceUSD: 60, link: "" }
                 ]
             },
             valemu: {
                 name: "VAL-EMULATOR",
-                features: ["Bypasses HVCI, TPM, and Secure Boot & VAN 152/5", "Manual Bans Only", "Safe to Use With Detected Cheats", "One-click process"],
+                functions: ["Fully V4nguard Emulation", "VAN 152 Bypass", "Val 5 Bypass", "Can Queue", "1 Pc Method", "Bypass All Popups"],
+                specs: ["Support V4lorant & L34gue of L3g3nds", "All CPU & GPU Support", "All Motherboard Support", "Win 10/11 Support", "Hvci On/Off", "Tpm On/Off", "Secure Boot On/Off"],
+                misc: ["Anti Van 152", "Anti Val 5", "Anti Detection", "Heartbeat Emulator"],
                 prices: [
-                    { title: "3 Days Key", priceTRY: 2300, priceUSD: 50, link: "https://www.shopier.com/ring0/47883671" },
-                    { title: "Weekly Key", priceTRY: 3900, priceUSD: 85, link: "https://www.shopier.com/ring0/46265898" },
-                    { title: "Monthly Key", priceTRY: 13800, priceUSD: 300, link: "https://www.shopier.com/ring0/46265906" }
+                    { title: "1 Day", priceTRY: 300, priceUSD: 10, link: "" },
+                    { title: "3 Day", priceTRY: 750, priceUSD: 25, link: "" },
+                    { title: "7 Day", priceTRY: 1400, priceUSD: 45, link: "" },
+                    { title: "15 Day", priceTRY: 1900, priceUSD: 60, link: "" },
+                    { title: "30 Day", priceTRY: 3300, priceUSD: 100, link: "" }
                 ]
             }
         };
@@ -951,13 +1121,9 @@
             for (let r of methodRadios) { if (r.checked) selectedMethod = r.value; }
 
             if (selectedMethod === 'cc') {
-                if (p.link) {
-                    window.open(p.link, '_blank');
-                } else {
-                    alert("Bu seçenek için kredi kartı ödemesi aktif değil. Lütfen Discord üzerinden satın alınız.");
-                }
+                window.open('https://shopier.com/ring0', '_blank');
             } else {
-                window.open('https://discord.gg/w5A9KHPEcY', '_blank');
+                window.open('https://discord.gg/bJAaQsJA9r', '_blank');
             }
         };
 
@@ -975,7 +1141,7 @@
                 .price-radio:checked + div { border-color: #6366f1 !important; background: rgba(99,102,241,0.08) !important; }
                 .method-cc:checked + div { border-color: #6366f1 !important; background: rgba(99,102,241,0.2) !important; color: white !important; }
                 .method-iban:checked + div { border-color: #5865F2 !important; background: rgba(88,101,242,0.2) !important; color: white !important; }
-                .method-crypto:checked + div { border-color: #f59e0b !important; background: rgba(245,158,11,0.2) !important; color: white !important; }
+                .method-crypto:checked + div { border-color: #6366f1 !important; background: rgba(99,102,241,0.2) !important; color: white !important; }
             </style>
             <div style="position: relative;">
                 <button onclick="closeModal('detailModal')" style="position: absolute; top: -20px; right: -20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1rem; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#fff';" onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.color='#94a3b8';">✕</button>
@@ -1029,7 +1195,7 @@
             html += `<div style="color: #6366f1; font-weight: 700; margin-bottom: 12px; letter-spacing: 0.5px;">ÖDEME YÖNTEMİ</div>`;
             html += `<div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 25px;">`;
 
-            let hasCC = prod.prices.some(p => p.link && !p.isDiscord && !prod.isDiscordOnly);
+            let hasCC = true;
 
             if (hasCC) {
                 html += `
@@ -1078,8 +1244,8 @@
                 <div style="background: #5865F2; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">D</div>
                 <div><strong style="color: #ffffff;">DISCORD ÜZERİNDEN SATIN AL</strong></div>
             </div>
-            <p style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 16px;">OneClick ürünleri sadece Discord üzerinden yetkili satıcılar tarafından satılmaktadır.</p>
-            <a href="https://discord.gg/w5A9KHPEcY" target="_blank" style="background: #5865F2; display: block; text-align: center; padding: 12px; border-radius: 40px; color: white; text-decoration: none; font-weight: 600; font-size: 0.8rem;">DISCORD SUNUCUSUNA KATIL</a>
+            <p style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 16px;">Ürünler sadece Discord üzerinden yetkili satıcılar tarafından satılmaktadır.</p>
+            <a href="https://discord.gg/bJAaQsJA9r" target="_blank" style="background: #5865F2; display: block; text-align: center; padding: 12px; border-radius: 40px; color: white; text-decoration: none; font-weight: 600; font-size: 0.8rem;">DISCORD SUNUCUSUNA KATIL</a>
             <button onclick="this.parentElement.remove()" style="position: absolute; top: 12px; right: 12px; background: none; border: none; color: #64748b; cursor: pointer;">✕</button>
         `;
             document.body.appendChild(alertDiv);
@@ -1093,7 +1259,7 @@
 
             const productsList = [
                 { key: 'spoofer', name: 'SPOOFER', prices: productDetails.spoofer.prices },
-                { key: 'oneclick', name: 'ONECLICK', prices: productDetails.oneclick.prices },
+                { key: 'spooferpriv', name: 'SPOOFER PRIVATE', prices: productDetails.spooferpriv.prices },
                 { key: 'valemu', name: 'VAL-EMULATOR', prices: productDetails.valemu.prices }
             ];
 
@@ -1124,7 +1290,7 @@
             <div class="close-notification" onclick="this.parentElement.remove()">✕</div>
             <div class="notification-title">DUYURU</div>
             <div class="notification-text">Düzenli olarak Discord sunucumuzda çekilişler düzenlenmektedir. Katılmak için Discord sunucumuza katılın ve gerekli bilgileri alın.</div>
-            <a href="https://discord.gg/w5A9KHPEcY" target="_blank" class="notification-btn">DISCORD SUNUCUSUNA KATIL</a>
+            <a href="https://discord.gg/bJAaQsJA9r" target="_blank" class="notification-btn">DISCORD SUNUCUSUNA KATIL</a>
         `;
             document.body.appendChild(notification);
             setTimeout(() => { if (notification.parentElement) notification.remove(); }, 15000);
@@ -1135,40 +1301,52 @@
             const lang = currentLang;
             if (lang === 'tr') {
                 document.getElementById('policyNavLink').innerText = 'MÜŞTERİ POLİTİKASI';
-                document.getElementById('heroBadge').innerText = 'RING 0 KERNEL | GERÇEK ZAMANLI KORUMA';
-                document.getElementById('whyTitle').innerText = 'NEDEN RING 0 PRIVATE?';
-                document.getElementById('why1Title').innerText = 'KERNEL SEVİYE GÜVENLİK';
-                document.getElementById('why2Title').innerText = 'ANINDA TESLİMAT';
-                document.getElementById('why3Title').innerText = '7/24 UZMAN DESTEK';
-                document.getElementById('why4Title').innerText = 'SÜREKLİ GÜNCELLEME';
-                document.getElementById('why1Desc').innerText = 'Ring 0 ayrıcalığı ile çalışan yazılımlar, tespit edilemez altyapı ve üstün gizlilik sağlar.';
-                document.getElementById('why2Desc').innerText = 'Ödeme sonrası lisanslarınız otomatik olarak Discord üzerinden 7/24 teslim edilir.';
-                document.getElementById('why3Desc').innerText = 'Teknik ekibimiz her zaman yanınızda, sorunlarınıza anında çözüm sunar.';
-                document.getElementById('why4Desc').innerText = 'Oyun güncellemelerine karşı en hızlı adaptasyon, kesintisiz hizmet garantisi.';
+                document.getElementById('whyTitle') && (document.getElementById('whyTitle').innerText = 'NEDEN RING 0 PRIVATE?');
+                document.getElementById('why1Title') && (document.getElementById('why1Title').innerText = 'KERNEL SEVİYE GÜVENLİK');
+                document.getElementById('why2Title') && (document.getElementById('why2Title').innerText = 'ANINDA TESLİMAT');
+                document.getElementById('why3Title') && (document.getElementById('why3Title').innerText = '7/24 UZMAN DESTEK');
+                document.getElementById('why4Title') && (document.getElementById('why4Title').innerText = 'SÜREKLİ GÜNCELLEME');
+                document.getElementById('why1Desc') && (document.getElementById('why1Desc').innerText = 'Ring 0 ayrıcalığı ile çalışan yazılımlar, tespit edilemez altyapı ve üstün gizlilik sağlar.');
+                document.getElementById('why2Desc') && (document.getElementById('why2Desc').innerText = 'Ödeme sonrası lisanslarınız otomatik olarak Discord üzerinden 7/24 teslim edilir.');
+                document.getElementById('why3Desc') && (document.getElementById('why3Desc').innerText = 'Teknik ekibimiz her zaman yanınızda, sorunlarınıza anında çözüm sunar.');
+                document.getElementById('why4Desc') && (document.getElementById('why4Desc').innerText = 'Oyun güncellemelerine karşı en hızlı adaptasyon, kesintisiz hizmet garantisi.');
 
                 document.getElementById('vouchesTitle').innerText = 'MÜŞTERİ YORUMLARI';
                 document.getElementById('footerText').innerText = '2026 RING 0 PRIVATE - TÜM HAKLARI SAKLIDIR';
                 if (document.getElementById('policyModalTitle')) document.getElementById('policyModalTitle').innerText = '⚖️ MÜŞTERİ KURALLARI VE SATIŞ SÖZLEŞMESİ';
                 if (document.getElementById('policyCloseBtn')) document.getElementById('policyCloseBtn').innerText = 'KAPAT';
                 if (document.getElementById('discordCopyBtn')) document.getElementById('discordCopyBtn').innerText = 'DISCORD SUNUCUSUNA KATIL';
+                
+                // Yeni Elemanların Çevirileri
+                document.getElementById('stat1Label') && (document.getElementById('stat1Label').innerText = 'MUTLU MÜŞTERİ');
+                document.getElementById('stat2Label') && (document.getElementById('stat2Label').innerText = 'YASAKLAMA KALDIRILDI');
+                document.getElementById('stat3Label') && (document.getElementById('stat3Label').innerText = 'AKTİF DESTEK');
+                document.getElementById('stat4Label') && (document.getElementById('stat4Label').innerText = 'BAŞARI ORANI');
+                document.getElementById('statusWidgetTitle') && (document.getElementById('statusWidgetTitle').innerText = 'SİSTEM DURUMU');
             } else {
                 document.getElementById('policyNavLink').innerText = 'CUSTOMER POLICY';
-                document.getElementById('heroBadge').innerText = 'RING 0 KERNEL | REAL TIME PROTECTION';
-                document.getElementById('whyTitle').innerText = 'WHY CHOOSE RING 0 PRIVATE?';
-                document.getElementById('why1Title').innerText = 'KERNEL LEVEL SECURITY';
-                document.getElementById('why2Title').innerText = 'INSTANT DELIVERY';
-                document.getElementById('why3Title').innerText = '24/7 EXPERT SUPPORT';
-                document.getElementById('why4Title').innerText = 'CONTINUOUS UPDATES';
-                document.getElementById('why1Desc').innerText = 'Software running at Ring 0 privilege provides undetectable infrastructure and superior privacy.';
-                document.getElementById('why2Desc').innerText = 'After payment, your licenses are automatically delivered via Discord 24/7.';
-                document.getElementById('why3Desc').innerText = 'Our technical team is always with you, providing instant solutions.';
-                document.getElementById('why4Desc').innerText = 'Fastest adaptation to game updates, uninterrupted service guarantee.';
-                document.getElementById('newsText').innerText = 'NEXT GEN HYPERVISOR & INTERNAL SOLUTIONS - COMING SOON | STAY TUNED';
+                document.getElementById('whyTitle') && (document.getElementById('whyTitle').innerText = 'WHY CHOOSE RING 0 PRIVATE?');
+                document.getElementById('why1Title') && (document.getElementById('why1Title').innerText = 'KERNEL LEVEL SECURITY');
+                document.getElementById('why2Title') && (document.getElementById('why2Title').innerText = 'INSTANT DELIVERY');
+                document.getElementById('why3Title') && (document.getElementById('why3Title').innerText = '24/7 EXPERT SUPPORT');
+                document.getElementById('why4Title') && (document.getElementById('why4Title').innerText = 'CONTINUOUS UPDATES');
+                document.getElementById('why1Desc') && (document.getElementById('why1Desc').innerText = 'Software running at Ring 0 privilege provides undetectable infrastructure and superior privacy.');
+                document.getElementById('why2Desc') && (document.getElementById('why2Desc').innerText = 'After payment, your licenses are automatically delivered via Discord 24/7.');
+                document.getElementById('why3Desc') && (document.getElementById('why3Desc').innerText = 'Our technical team is always with you, providing instant solutions.');
+                document.getElementById('why4Desc') && (document.getElementById('why4Desc').innerText = 'Fastest adaptation to game updates, uninterrupted service guarantee.');
+                document.getElementById('newsText') && (document.getElementById('newsText').innerText = 'NEXT GEN HYPERVISOR & INTERNAL SOLUTIONS - COMING SOON | STAY TUNED');
                 document.getElementById('vouchesTitle').innerText = 'CUSTOMER VOUCHES';
                 document.getElementById('footerText').innerText = '2026 RING 0 PRIVATE - ALL RIGHTS RESERVED | KERNEL LEVEL SECURITY PLATFORM';
                 if (document.getElementById('policyModalTitle')) document.getElementById('policyModalTitle').innerText = '⚖️ CUSTOMER RULES AND SALES AGREEMENT';
                 if (document.getElementById('policyCloseBtn')) document.getElementById('policyCloseBtn').innerText = 'CLOSE';
                 if (document.getElementById('discordCopyBtn')) document.getElementById('discordCopyBtn').innerText = 'JOIN DISCORD SERVER';
+                
+                // Yeni Elemanların Çevirileri
+                document.getElementById('stat1Label') && (document.getElementById('stat1Label').innerText = 'HAPPY CUSTOMERS');
+                document.getElementById('stat2Label') && (document.getElementById('stat2Label').innerText = 'BANS LIFTED');
+                document.getElementById('stat3Label') && (document.getElementById('stat3Label').innerText = 'ACTIVE SUPPORT');
+                document.getElementById('stat4Label') && (document.getElementById('stat4Label').innerText = 'SUCCESS RATE');
+                document.getElementById('statusWidgetTitle') && (document.getElementById('statusWidgetTitle').innerText = 'SYSTEM STATUS');
             }
         }
 
@@ -1183,7 +1361,7 @@
         });
 
         document.getElementById('policyNavLink')?.addEventListener('click', (e) => { e.preventDefault(); openModal('policyModal'); });
-        document.getElementById('discordCopyBtn')?.addEventListener('click', () => { window.open('https://discord.gg/w5A9KHPEcY', '_blank'); });
+        document.getElementById('discordCopyBtn')?.addEventListener('click', () => { window.open('https://discord.gg/bJAaQsJA9r', '_blank'); });
 
         async function loadVouches() {
             try {
@@ -1221,15 +1399,79 @@
             }
         }
 
+        // İstatistik Animasyonu
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number[data-target]');
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const suffix = counter.getAttribute('data-suffix') || '';
+                const duration = 2000; // 2 saniye
+                const stepTime = 30;
+                const steps = duration / stepTime;
+                const increment = target / steps;
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        counter.innerText = target + suffix;
+                        clearInterval(timer);
+                    } else {
+                        counter.innerText = Math.floor(current) + suffix;
+                    }
+                }, stepTime);
+            });
+        }
+
+        // Canlı Aktivite Toast Sistemi
+        function startActivityToasts() {
+            const activities = [
+                { tr: { title: "Yeni Sipariş", text: "Neo*, Spoofer (Lifetime) satın aldı! 🚀" }, en: { title: "New Order", text: "Neo* purchased Spoofer (Lifetime)! 🚀" }, icon: "🛒" },
+                { tr: { title: "Yeni Sipariş", text: "Melih*, 1 Günlük OneClick satın aldı! 🔥" }, en: { title: "New Order", text: "Melih* purchased 1 Days OneClick! 🔥" }, icon: "🔥" },
+                { tr: { title: "Yeni Sipariş", text: "Kerem*, Val-Emulator (Weekly) satın aldı! ⚡" }, en: { title: "New Order", text: "Kerem* purchased Val-Emulator (Weekly)! ⚡" }, icon: "⚡" },
+                { tr: { title: "Yeni Sipariş", text: "Can*, Spoofer (Onetime) satın aldı! 💎" }, en: { title: "New Order", text: "Can* purchased Spoofer (Onetime)! 💎" }, icon: "🛒" },
+                { tr: { title: "Topluluk", text: "Discord sunucumuza yeni bir üye katıldı! 🎉" }, en: { title: "Community", text: "A new member joined our Discord server! 🎉" }, icon: "🎉" },
+                { tr: { title: "Destek", text: "Bir HWID ban kaldırma işlemi başarıyla tamamlandı! ✅" }, en: { title: "Support", text: "A HWID ban lift process completed successfully! ✅" }, icon: "✅" }
+            ];
+
+            const toast = document.getElementById('activityToast');
+            const toastIcon = document.getElementById('activityIcon');
+            const toastTitle = document.getElementById('activityTitle');
+            const toastText = document.getElementById('activityText');
+
+            function showToast() {
+                const activity = activities[Math.floor(Math.random() * activities.length)];
+                const data = activity[currentLang] || activity['tr'];
+                
+                if (toastIcon) toastIcon.innerText = activity.icon;
+                if (toastTitle) toastTitle.innerText = data.title;
+                if (toastText) toastText.innerText = data.text;
+
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 6000);
+            }
+
+            // İlk aktiviteyi 8 saniye sonra göster, sonra her 20 saniyede bir tekrarla
+            setTimeout(() => {
+                showToast();
+                setInterval(showToast, 20000);
+            }, 8000);
+        }
+
         window.addEventListener('load', () => {
             renderProducts();
             loadVouches();
             setInterval(loadVouches, 60000); // Her 60 saniyede bir günceller
-            setTimeout(() => {
-                document.getElementById('mainWrapper').classList.add('visible');
-                document.getElementById('loader').classList.add('hidden');
-                setTimeout(() => { const el = document.getElementById('loader'); if (el) el.style.display = 'none'; }, 800);
-            }, 2200);
+            
+            // Siteye girilince anında mutlu müşteri animasyonunu başlat
+            document.getElementById('mainWrapper').classList.add('visible');
+            document.getElementById('loader').classList.add('hidden');
+            animateCounters();
+            startActivityToasts();
+            setTimeout(() => { const el = document.getElementById('loader'); if (el) el.style.display = 'none'; }, 800);
+            
             setTimeout(() => { showNotification(); }, 3000);
         });
 
@@ -1295,6 +1537,21 @@
         <div class="modal-content" id="modalContent"></div>
     </div>
 
-</body>
+    <!-- Canlı Aktivite Toast Bildirimi -->
+    <div id="activityToast" class="activity-toast">
+        <div class="activity-icon" id="activityIcon">🛒</div>
+        <div class="activity-content">
+            <div class="activity-title" id="activityTitle">Yeni Sipariş</div>
+            <div class="activity-text" id="activityText">Bir kullanıcı Spoofer satın aldı!</div>
+        </div>
+    </div>
 
-</html>
+
+
+
+<div class="notification-toast">
+            <div class="close-notification" onclick="this.parentElement.remove()">✕</div>
+            <div class="notification-title">DUYURU</div>
+            <div class="notification-text">Düzenli olarak Discord sunucumuzda çekilişler düzenlenmektedir. Katılmak için Discord sunucumuza katılın ve gerekli bilgileri alın.</div>
+            <a href="https://discord.gg/bJAaQsJA9r" target="_blank" class="notification-btn">DISCORD SUNUCUSUNA KATIL</a>
+        </div></body></html>
