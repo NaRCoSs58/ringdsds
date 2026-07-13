@@ -857,72 +857,84 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
             font-weight: 700;
         }
 
-        /* Canlı Aktivite Toast Bildirimi Stilleri */
-        .activity-toast {
+        /* Ses Kontrol Alanı */
+        .audio-container {
             position: fixed;
             bottom: 30px;
             left: 30px;
-            background: linear-gradient(135deg, rgba(10, 10, 18, 0.95), rgba(5, 5, 10, 0.95));
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(99, 102, 241, 0.25);
-            border-radius: 20px;
-            padding: 16px 20px;
-            max-width: 320px;
-            z-index: 15000;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
             display: flex;
             align-items: center;
             gap: 15px;
-            transform: translateX(-150%);
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 15000;
+            background: rgba(10, 10, 18, 0.85);
+            padding: 8px 15px 8px 8px;
+            border-radius: 40px;
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s;
         }
 
-        .activity-toast.show {
-            transform: translateX(0);
-        }
-
-        .activity-icon {
-            background: rgba(99, 102, 241, 0.15);
+        .audio-toggle-btn {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            width: 38px;
-            height: 38px;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
-            color: #6366f1;
-            box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
-            flex-shrink: 0;
+            color: #818cf8;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .activity-content {
-            flex: 1;
+        .audio-toggle-btn:hover {
+            background: rgba(99, 102, 241, 0.25);
+            transform: scale(1.1);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
         }
 
-        .activity-title {
-            font-size: 0.75rem;
+        .volume-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .volume-slider {
+            -webkit-appearance: none;
+            width: 80px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #818cf8;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(129, 140, 248, 0.8);
+            transition: all 0.2s;
+        }
+        
+        .volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: #fff;
+        }
+
+        .volume-label {
             color: #94a3b8;
-            margin-bottom: 2px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .activity-text {
-            font-size: 0.82rem;
-            color: #ffffff;
-            font-weight: 600;
-            line-height: 1.3;
-        }
-
-        @media (max-width: 800px) {
-            .activity-toast {
-                left: 15px;
-                right: 15px;
-                max-width: none;
-                bottom: 90px;
-            }
+            font-size: 0.75rem;
+            font-weight: 700;
+            min-width: 35px;
         }
     </style>
     <link href="./Ring 0 Private _ Undetected Products_files/css2" rel="stylesheet">
@@ -1423,42 +1435,7 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
             });
         }
 
-        // Canlı Aktivite Toast Sistemi
-        function startActivityToasts() {
-            const activities = [
-                { tr: { title: "Yeni Sipariş", text: "Neo*, Spoofer (Lifetime) satın aldı! 🚀" }, en: { title: "New Order", text: "Neo* purchased Spoofer (Lifetime)! 🚀" }, icon: "🛒" },
-                { tr: { title: "Yeni Sipariş", text: "Melih*, 1 Günlük OneClick satın aldı! 🔥" }, en: { title: "New Order", text: "Melih* purchased 1 Days OneClick! 🔥" }, icon: "🔥" },
-                { tr: { title: "Yeni Sipariş", text: "Kerem*, Val-Emulator (Weekly) satın aldı! ⚡" }, en: { title: "New Order", text: "Kerem* purchased Val-Emulator (Weekly)! ⚡" }, icon: "⚡" },
-                { tr: { title: "Yeni Sipariş", text: "Can*, Spoofer (Onetime) satın aldı! 💎" }, en: { title: "New Order", text: "Can* purchased Spoofer (Onetime)! 💎" }, icon: "🛒" },
-                { tr: { title: "Topluluk", text: "Discord sunucumuza yeni bir üye katıldı! 🎉" }, en: { title: "Community", text: "A new member joined our Discord server! 🎉" }, icon: "🎉" },
-                { tr: { title: "Destek", text: "Bir HWID ban kaldırma işlemi başarıyla tamamlandı! ✅" }, en: { title: "Support", text: "A HWID ban lift process completed successfully! ✅" }, icon: "✅" }
-            ];
 
-            const toast = document.getElementById('activityToast');
-            const toastIcon = document.getElementById('activityIcon');
-            const toastTitle = document.getElementById('activityTitle');
-            const toastText = document.getElementById('activityText');
-
-            function showToast() {
-                const activity = activities[Math.floor(Math.random() * activities.length)];
-                const data = activity[currentLang] || activity['tr'];
-                
-                if (toastIcon) toastIcon.innerText = activity.icon;
-                if (toastTitle) toastTitle.innerText = data.title;
-                if (toastText) toastText.innerText = data.text;
-
-                toast.classList.add('show');
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 6000);
-            }
-
-            // İlk aktiviteyi 8 saniye sonra göster, sonra her 20 saniyede bir tekrarla
-            setTimeout(() => {
-                showToast();
-                setInterval(showToast, 20000);
-            }, 8000);
-        }
 
         window.addEventListener('load', () => {
             renderProducts();
@@ -1469,7 +1446,6 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
             document.getElementById('mainWrapper').classList.add('visible');
             document.getElementById('loader').classList.add('hidden');
             animateCounters();
-            startActivityToasts();
             setTimeout(() => { const el = document.getElementById('loader'); if (el) el.style.display = 'none'; }, 800);
             
             setTimeout(() => { showNotification(); }, 3000);
@@ -1537,14 +1513,6 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
         <div class="modal-content" id="modalContent"></div>
     </div>
 
-    <!-- Canlı Aktivite Toast Bildirimi -->
-    <div id="activityToast" class="activity-toast">
-        <div class="activity-icon" id="activityIcon">🛒</div>
-        <div class="activity-content">
-            <div class="activity-title" id="activityTitle">Yeni Sipariş</div>
-            <div class="activity-text" id="activityText">Bir kullanıcı Spoofer satın aldı!</div>
-        </div>
-    </div>
 
 
 
@@ -1554,4 +1522,69 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
             <div class="notification-title">DUYURU</div>
             <div class="notification-text">Düzenli olarak Discord sunucumuzda çekilişler düzenlenmektedir. Katılmak için Discord sunucumuza katılın ve gerekli bilgileri alın.</div>
             <a href="https://discord.gg/bJAaQsJA9r" target="_blank" class="notification-btn">DISCORD SUNUCUSUNA KATIL</a>
-        </div></body></html>
+        </div>
+        
+    <!-- Arka Plan Müziği ve Kontroller -->
+    <audio id="bgMusic" loop>
+        <source src="hermes.mp3" type="audio/mpeg">
+    </audio>
+    <div class="audio-container">
+        <button class="audio-toggle-btn" id="audioToggleBtn" title="Müziği Aç/Kapat">🔇</button>
+        <div class="volume-wrapper">
+            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="200" value="30">
+            <span class="volume-label" id="volumeLabel">%30</span>
+        </div>
+    </div>
+    <script>
+        const bgMusic = document.getElementById('bgMusic');
+        const audioBtn = document.getElementById('audioToggleBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeLabel = document.getElementById('volumeLabel');
+        let isMusicPlaying = false;
+        
+        bgMusic.volume = 0.15;
+
+        function updateVolume(val) {
+            volumeLabel.innerText = '%' + val;
+            bgMusic.volume = val / 200;
+            if (val == 0 && isMusicPlaying) {
+                audioBtn.innerText = '🔇';
+            } else if (val > 0 && isMusicPlaying) {
+                audioBtn.innerText = '🔊';
+            }
+        }
+
+        volumeSlider.addEventListener('input', (e) => {
+            updateVolume(e.target.value);
+        });
+
+        function toggleMusic() {
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                audioBtn.innerText = '🔇';
+                isMusicPlaying = false;
+            } else {
+                if(volumeSlider.value == 0) {
+                    volumeSlider.value = 30;
+                    updateVolume(30);
+                }
+                bgMusic.play().then(() => {
+                    audioBtn.innerText = '🔊';
+                    isMusicPlaying = true;
+                }).catch(err => {
+                    console.log("Müzik başlatılamadı:", err);
+                });
+            }
+        }
+
+        audioBtn.addEventListener('click', toggleMusic);
+
+        // Kullanıcı sayfaya ilk tıkladığında müziği otomatik başlat
+        document.body.addEventListener('click', function firstClickPlay(e) {
+            if (!isMusicPlaying && !e.target.closest('.audio-container')) {
+                toggleMusic();
+            }
+            document.body.removeEventListener('click', firstClickPlay);
+        }, { once: true });
+    </script>
+</body></html>
