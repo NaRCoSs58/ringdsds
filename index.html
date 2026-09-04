@@ -2438,20 +2438,28 @@
     </div>
 
     <script>
+        <!-- FIREBASE SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        // --- FIREBASE SETUP ---
+        const firebaseConfig = {
+            databaseURL: "https://site-1663f-default-rtdb.firebaseio.com/",
+            projectId: "site-1663f"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+
         // --- ADMIN SYSTEM LOGIC ---
         
-        // Check if master admin exists, if not create it
-        if (!localStorage.getItem('ring0_admins')) {
-            const initialAdmins = {
-                'owner': 'ring0master2026!'
-            };
-            localStorage.setItem('ring0_admins', JSON.stringify(initialAdmins));
-        }
-        
-        // Multi-ticket migration/init
-        if (!localStorage.getItem('ring0_tickets')) {
-            localStorage.setItem('ring0_tickets', JSON.stringify({}));
-        }
+        // Init master admin if not exists
+        db.ref('admins/owner').once('value').then(snap => {
+            if (!snap.exists()) {
+                db.ref('admins/owner').set('ring0master2026!');
+            }
+        });
         
         let currentSession = localStorage.getItem('ring0_current_session');
         if (!currentSession) {
@@ -2464,13 +2472,20 @@
             .then(data => {
                 if(data.ip) {
                     const newSession = 'IP: ' + data.ip;
-                    const tickets = JSON.parse(localStorage.getItem('ring0_tickets')) || {};
                     
-                    if (currentSession !== newSession && tickets[currentSession]) {
-                        if (!tickets[newSession]) tickets[newSession] = [];
-                        tickets[newSession] = tickets[newSession].concat(tickets[currentSession]);
-                        delete tickets[currentSession];
-                        localStorage.setItem('ring0_tickets', JSON.stringify(tickets));
+                    if (currentSession !== newSession && currentSession !== 'Bağlanıyor...') {
+                        // Migrate tickets from old session to new IP
+                        db.ref('tickets/' + currentSession).once('value').then(snap => {
+                            const oldMsgs = snap.val();
+                            if (oldMsgs) {
+                                db.ref('tickets/' + newSession).once('value').then(newSnap => {
+                                    let newMsgs = newSnap.val() || [];
+                                    newMsgs = newMsgs.concat(oldMsgs);
+                                    db.ref('tickets/' + newSession).set(newMsgs);
+                                    db.ref('tickets/' + currentSession).remove();
+                                });
+                            }
+                        });
                     }
                     
                     currentSession = newSession;
@@ -2490,6 +2505,7 @@
                     localStorage.setItem('ring0_current_session', currentSession);
                 }
             });
+            
         let activeAdminTicket = null;
 
         // Auto login if remembered
@@ -2535,25 +2551,27 @@
         document.getElementById('adminLoginBtn').addEventListener('click', () => {
             const u = document.getElementById('adminUser').value;
             const p = document.getElementById('adminPass').value;
-            const admins = JSON.parse(localStorage.getItem('ring0_admins'));
             
-            if (admins[u] && admins[u] === p) {
-                sessionStorage.setItem('ring0_logged_in', u);
-                if (document.getElementById('adminRememberMe').checked) {
-                    localStorage.setItem('ring0_logged_in_remember', u);
+            db.ref('admins/' + u).once('value').then(snap => {
+                const pass = snap.val();
+                if (pass && pass === p) {
+                    sessionStorage.setItem('ring0_logged_in', u);
+                    if (document.getElementById('adminRememberMe').checked) {
+                        localStorage.setItem('ring0_logged_in_remember', u);
+                    } else {
+                        localStorage.removeItem('ring0_logged_in_remember');
+                    }
+                    document.getElementById('adminError').style.display = 'none';
+                    adminLoginBox.style.display = 'none';
+                    adminPanelBox.style.display = 'block';
+                    document.getElementById('currentAdminName').innerText = "Hoşgeldin, " + u;
+                    loadAdminTickets();
+                    loadAdminMessages();
+                    loadAdminUsersList();
                 } else {
-                    localStorage.removeItem('ring0_logged_in_remember');
+                    document.getElementById('adminError').style.display = 'block';
                 }
-                document.getElementById('adminError').style.display = 'none';
-                adminLoginBox.style.display = 'none';
-                adminPanelBox.style.display = 'block';
-                document.getElementById('currentAdminName').innerText = "Hoşgeldin, " + u;
-                loadAdminTickets();
-                loadAdminMessages();
-                loadAdminUsersList();
-            } else {
-                document.getElementById('adminError').style.display = 'block';
-            }
+            });
         });
 
         // Logout
@@ -2578,20 +2596,21 @@
                 return;
             }
             
-            const admins = JSON.parse(localStorage.getItem('ring0_admins'));
-            if (admins[nu]) {
-                status.style.color = '#ff4444';
-                status.innerText = 'Bu admin zaten var!';
-            } else {
-                admins[nu] = np;
-                localStorage.setItem('ring0_admins', JSON.stringify(admins));
-                status.style.color = 'var(--neon-mint)';
-                status.innerText = 'Başarıyla eklendi!';
-                document.getElementById('newAdminUser').value = '';
-                document.getElementById('newAdminPass').value = '';
-                loadAdminUsersList();
-                setTimeout(() => status.innerText='', 3000);
-            }
+            db.ref('admins/' + nu).once('value').then(snap => {
+                if (snap.exists()) {
+                    status.style.color = '#ff4444';
+                    status.innerText = 'Bu admin zaten var!';
+                } else {
+                    db.ref('admins/' + nu).set(np).then(() => {
+                        status.style.color = 'var(--neon-mint)';
+                        status.innerText = 'Başarıyla eklendi!';
+                        document.getElementById('newAdminUser').value = '';
+                        document.getElementById('newAdminPass').value = '';
+                        loadAdminUsersList();
+                        setTimeout(() => status.innerText='', 3000);
+                    });
+                }
+            });
         });
 
         // --- SUPPORT SYSTEM LOGIC ---
@@ -2602,18 +2621,37 @@
         const supportInput = document.getElementById('supportInput');
         const supportChat = document.getElementById('supportChat');
 
+        // Realtime user chat listener
+        let userChatListener = null;
+
         supportBtn.addEventListener('click', () => {
             supportBox.style.display = supportBox.style.display === 'none' ? 'block' : 'none';
-            if(supportBox.style.display === 'block') renderUserChat();
+            if(supportBox.style.display === 'block') {
+                renderUserChat();
+                // Attach realtime listener for this session
+                if(!userChatListener) {
+                    userChatListener = db.ref('tickets/' + currentSession).on('value', (snap) => {
+                        renderUserChatFromSnap(snap.val() || []);
+                    });
+                }
+            } else {
+                if(userChatListener) {
+                    db.ref('tickets/' + currentSession).off('value', userChatListener);
+                    userChatListener = null;
+                }
+            }
         });
+        
         closeSupport.addEventListener('click', () => {
             supportBox.style.display = 'none';
+            if(userChatListener) {
+                db.ref('tickets/' + currentSession).off('value', userChatListener);
+                userChatListener = null;
+            }
         });
 
-        function renderUserChat() {
+        function renderUserChatFromSnap(messages) {
             supportChat.innerHTML = '<div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; font-size: 14px; margin-bottom:10px;">Merhaba! Sana nasıl yardımcı olabilirim?</div>';
-            const tickets = JSON.parse(localStorage.getItem('ring0_tickets')) || {};
-            const messages = tickets[currentSession] || [];
             
             messages.forEach(m => {
                 const div = document.createElement('div');
@@ -2631,7 +2669,6 @@
                     div.style.border = '1px solid var(--neon-mint-dim)';
                     div.innerText = m.text;
                 } else {
-                    // Admin message
                     div.style.background = 'rgba(255, 68, 68, 0.15)'; 
                     div.style.color = '#ff9999';
                     div.style.alignSelf = 'flex-start';
@@ -2644,40 +2681,52 @@
             supportChat.scrollTop = supportChat.scrollHeight;
         }
 
+        function renderUserChat() {
+            db.ref('tickets/' + currentSession).once('value').then(snap => {
+                renderUserChatFromSnap(snap.val() || []);
+            });
+        }
+
         sendSupport.addEventListener('click', () => {
             const text = supportInput.value.trim();
             if (text) {
                 const loggedAdmin = sessionStorage.getItem('ring0_logged_in');
                 const isAd = loggedAdmin ? 'admin' : 'user';
-                const tickets = JSON.parse(localStorage.getItem('ring0_tickets')) || {};
                 
-                if (!tickets[currentSession]) tickets[currentSession] = [];
-                
-                tickets[currentSession].push({ 
-                    time: new Date().toLocaleTimeString(), 
-                    text: text, 
-                    sender: isAd,
-                    adminName: loggedAdmin
+                db.ref('tickets/' + currentSession).once('value').then(snap => {
+                    const messages = snap.val() || [];
+                    messages.push({ 
+                        time: new Date().toLocaleTimeString(), 
+                        text: text, 
+                        sender: isAd,
+                        adminName: loggedAdmin
+                    });
+                    db.ref('tickets/' + currentSession).set(messages).then(() => {
+                        supportInput.value = '';
+                    });
                 });
-                
-                localStorage.setItem('ring0_tickets', JSON.stringify(tickets));
-                supportInput.value = '';
-                renderUserChat();
-                if(loggedAdmin) {
-                    loadAdminTickets();
-                    loadAdminMessages(); 
-                }
             }
         });
         
         function loadAdminUsersList() {
             const list = document.getElementById('adminUsersList');
             if(!list) return;
-            const admins = JSON.parse(localStorage.getItem('ring0_admins'));
-            list.innerHTML = '';
-            for(let u in admins) {
-                list.innerHTML += `<div style="background: rgba(255,255,255,0.05); padding: 5px 8px; border-radius: 4px; display: flex; justify-content: space-between;"><span><i class="fa-solid fa-user" style="color:var(--neon-mint); font-size: 10px; margin-right:5px;"></i> ${u}</span> <span style="color:#aaa;">Şifre: ${admins[u]}</span></div>`;
-            }
+            db.ref('admins').once('value').then(snap => {
+                const admins = snap.val() || {};
+                list.innerHTML = '';
+                for(let u in admins) {
+                    const isOwner = u === 'owner';
+                    const deleteBtn = isOwner ? '' : `<button onclick="deleteAdmin('${u}')" style="background: rgba(255,0,0,0.2); border: none; color: #ff4444; border-radius: 4px; padding: 2px 5px; cursor: pointer; margin-left: 10px; font-size: 11px; transition: all 0.2s;"><i class="fa-solid fa-trash"></i></button>`;
+                    
+                    list.innerHTML += `<div style="background: rgba(255,255,255,0.05); padding: 5px 8px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                        <span><i class="fa-solid fa-user" style="color:var(--neon-mint); font-size: 10px; margin-right:5px;"></i> ${u}</span> 
+                        <div>
+                            <span style="color:#aaa; font-size: 11px;">Şifre: ${admins[u]}</span>
+                            ${deleteBtn}
+                        </div>
+                    </div>`;
+                }
+            });
         }
 
         // Trigger send on Enter
@@ -2692,25 +2741,21 @@
             const text = input.value.trim();
             if (text) {
                 const loggedAdmin = sessionStorage.getItem('ring0_logged_in');
-                const tickets = JSON.parse(localStorage.getItem('ring0_tickets'));
-                if(!tickets[activeAdminTicket]) tickets[activeAdminTicket] = [];
-                
-                tickets[activeAdminTicket].push({ 
-                    time: new Date().toLocaleTimeString(), 
-                    text: text, 
-                    sender: 'admin',
-                    adminName: loggedAdmin
+                db.ref('tickets/' + activeAdminTicket).once('value').then(snap => {
+                    const messages = snap.val() || [];
+                    messages.push({ 
+                        time: new Date().toLocaleTimeString(), 
+                        text: text, 
+                        sender: 'admin',
+                        adminName: loggedAdmin
+                    });
+                    db.ref('tickets/' + activeAdminTicket).set(messages).then(() => {
+                        input.value = '';
+                    });
                 });
-                
-                localStorage.setItem('ring0_tickets', JSON.stringify(tickets));
-                input.value = '';
-                loadAdminMessages();
-                
-                if(activeAdminTicket === currentSession && supportBox.style.display === 'block') {
-                    renderUserChat();
-                }
             }
         });
+        
         document.getElementById('adminReplyInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') document.getElementById('adminReplyBtn').click();
         });
@@ -2719,45 +2764,49 @@
         document.getElementById('adminCloseTicketBtn').addEventListener('click', () => {
             if (!activeAdminTicket) return;
             if (confirm(activeAdminTicket + " odasını silmek istediğinize emin misiniz?")) {
-                const tickets = JSON.parse(localStorage.getItem('ring0_tickets')) || {};
-                if (tickets[activeAdminTicket]) {
-                    delete tickets[activeAdminTicket];
-                    localStorage.setItem('ring0_tickets', JSON.stringify(tickets));
+                db.ref('tickets/' + activeAdminTicket).remove().then(() => {
                     activeAdminTicket = null;
-                    loadAdminTickets();
                     loadAdminMessages();
-                }
+                });
             }
         });
+
+        let adminTicketsListener = null;
+        let adminActiveTicketListener = null;
 
         function loadAdminTickets() {
             const list = document.getElementById('adminTicketList');
             if(!list) return;
-            const tickets = JSON.parse(localStorage.getItem('ring0_tickets')) || {};
-            list.innerHTML = '';
             
-            const ticketKeys = Object.keys(tickets);
-            if (ticketKeys.length === 0) {
-                list.innerHTML = '<div style="color: #666; font-size: 13px;">Hiç oda yok.</div>';
-                return;
-            }
-            
-            ticketKeys.forEach(t => {
-                const div = document.createElement('div');
-                div.style.padding = '8px';
-                div.style.borderRadius = '5px';
-                div.style.fontSize = '12px';
-                div.style.cursor = 'pointer';
-                div.style.background = activeAdminTicket === t ? 'rgba(0, 255, 204, 0.2)' : 'rgba(255,255,255,0.05)';
-                div.style.borderLeft = activeAdminTicket === t ? '3px solid var(--neon-mint)' : '3px solid transparent';
-                div.innerHTML = `<i class="fa-solid fa-user" style="color:var(--text-secondary); margin-right:5px;"></i> ${t}`;
-                div.addEventListener('click', () => {
-                    activeAdminTicket = t;
-                    loadAdminTickets(); 
-                    loadAdminMessages(); 
+            if(!adminTicketsListener) {
+                adminTicketsListener = db.ref('tickets').on('value', snap => {
+                    const tickets = snap.val() || {};
+                    list.innerHTML = '';
+                    
+                    const ticketKeys = Object.keys(tickets);
+                    if (ticketKeys.length === 0) {
+                        list.innerHTML = '<div style="color: #666; font-size: 13px;">Hiç oda yok.</div>';
+                        return;
+                    }
+                    
+                    ticketKeys.forEach(t => {
+                        const div = document.createElement('div');
+                        div.style.padding = '8px';
+                        div.style.borderRadius = '5px';
+                        div.style.fontSize = '12px';
+                        div.style.cursor = 'pointer';
+                        div.style.background = activeAdminTicket === t ? 'rgba(0, 255, 204, 0.2)' : 'rgba(255,255,255,0.05)';
+                        div.style.borderLeft = activeAdminTicket === t ? '3px solid var(--neon-mint)' : '3px solid transparent';
+                        div.innerHTML = `<i class="fa-solid fa-user" style="color:var(--text-secondary); margin-right:5px;"></i> ${t}`;
+                        div.addEventListener('click', () => {
+                            activeAdminTicket = t;
+                            loadAdminTickets(); // Re-render to show active
+                            loadAdminMessages(); 
+                        });
+                        list.appendChild(div);
+                    });
                 });
-                list.appendChild(div);
-            });
+            }
         }
 
         function loadAdminMessages() {
@@ -2767,6 +2816,12 @@
             const replyBtn = document.getElementById('adminReplyBtn');
             const closeBtn = document.getElementById('adminCloseTicketBtn');
             
+            if (adminActiveTicketListener) {
+                // Detach previous listener
+                db.ref('tickets').off('value', adminActiveTicketListener);
+                adminActiveTicketListener = null;
+            }
+
             if (!activeAdminTicket) {
                 if(list) list.innerHTML = '<div style="color: #666; font-size: 13px;">Lütfen soldan bir oda seçin.</div>';
                 if(title) title.innerText = 'Oda Seçilmedi';
@@ -2782,60 +2837,38 @@
             replyBtn.style.opacity = '1';
             if(closeBtn) { closeBtn.disabled = false; closeBtn.style.opacity = '1'; }
             
-            const tickets = JSON.parse(localStorage.getItem('ring0_tickets')) || {};
-            const messages = tickets[activeAdminTicket] || [];
-            
-            list.innerHTML = '';
-            if (messages.length === 0) {
-                list.innerHTML = '<div style="color: #666; font-size: 13px;">Henüz mesaj yok.</div>';
-            } else {
-                messages.forEach(m => {
-                    const div = document.createElement('div');
-                    div.style.padding = '8px';
-                    div.style.borderRadius = '5px';
-                    div.style.fontSize = '13px';
-                    if (m.sender === 'user' || !m.sender) {
-                        div.style.background = 'rgba(255,255,255,0.05)';
-                        div.style.borderLeft = '3px solid var(--neon-mint)';
-                        div.innerHTML = `<span style="color: #aaa; font-size: 11px;">[${m.time}] Kullanıcı:</span> ${m.text}`;
-                    } else {
-                        div.style.background = 'rgba(255,68,68,0.1)';
-                        div.style.borderLeft = '3px solid #ff4444';
-                        div.innerHTML = `<span style="color: #ff9999; font-size: 11px;">[${m.time}] ${m.adminName || 'Yönetici'}:</span> ${m.text}`;
-                    }
-                    list.appendChild(div);
-                });
-                list.scrollTop = list.scrollHeight;
-            }
+            adminActiveTicketListener = db.ref('tickets/' + activeAdminTicket).on('value', snap => {
+                const messages = snap.val() || [];
+                list.innerHTML = '';
+                if (messages.length === 0) {
+                    list.innerHTML = '<div style="color: #666; font-size: 13px;">Henüz mesaj yok.</div>';
+                } else {
+                    messages.forEach(m => {
+                        const div = document.createElement('div');
+                        div.style.padding = '8px';
+                        div.style.borderRadius = '5px';
+                        div.style.fontSize = '13px';
+                        if (m.sender === 'user' || !m.sender) {
+                            div.style.background = 'rgba(255,255,255,0.05)';
+                            div.style.borderLeft = '3px solid var(--neon-mint)';
+                            div.innerHTML = `<span style="color: #aaa; font-size: 11px;">[${m.time}] Kullanıcı:</span> ${m.text}`;
+                        } else {
+                            div.style.background = 'rgba(255,68,68,0.1)';
+                            div.style.borderLeft = '3px solid #ff4444';
+                            div.innerHTML = `<span style="color: #ff9999; font-size: 11px;">[${m.time}] ${m.adminName || 'Yönetici'}:</span> ${m.text}`;
+                        }
+                        list.appendChild(div);
+                    });
+                    list.scrollTop = list.scrollHeight;
+                }
+            });
         }
         
-        function loadAdminUsersList() {
-            const list = document.getElementById('adminUsersList');
-            if(!list) return;
-            const admins = JSON.parse(localStorage.getItem('ring0_admins'));
-            list.innerHTML = '';
-            for(let u in admins) {
-                const isOwner = u === 'owner';
-                const deleteBtn = isOwner ? '' : `<button onclick="deleteAdmin('${u}')" style="background: rgba(255,0,0,0.2); border: none; color: #ff4444; border-radius: 4px; padding: 2px 5px; cursor: pointer; margin-left: 10px; font-size: 11px; transition: all 0.2s;"><i class="fa-solid fa-trash"></i></button>`;
-                
-                list.innerHTML += `<div style="background: rgba(255,255,255,0.05); padding: 5px 8px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
-                    <span><i class="fa-solid fa-user" style="color:var(--neon-mint); font-size: 10px; margin-right:5px;"></i> ${u}</span> 
-                    <div>
-                        <span style="color:#aaa; font-size: 11px;">Şifre: ${admins[u]}</span>
-                        ${deleteBtn}
-                    </div>
-                </div>`;
-            }
-        }
-
         window.deleteAdmin = function(username) {
             if (username === 'owner') return; 
-            const admins = JSON.parse(localStorage.getItem('ring0_admins'));
-            if (admins[username]) {
-                delete admins[username];
-                localStorage.setItem('ring0_admins', JSON.stringify(admins));
+            db.ref('admins/' + username).remove().then(() => {
                 loadAdminUsersList();
-            }
+            });
         };
     </script>
 </body>
