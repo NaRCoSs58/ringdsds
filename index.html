@@ -2342,5 +2342,501 @@
         }
         drawBackground();
     </script>
+
+    <!-- SUPPORT CHAT WIDGET -->
+    <div id="supportWidget" class="support-widget" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+        <button id="supportBtn" style="background: var(--neon-mint); color: #000; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; cursor: pointer; box-shadow: 0 0 15px var(--neon-mint-glow); transition: all 0.3s ease;">
+            <i class="fa-solid fa-headset"></i>
+        </button>
+        
+        <div id="supportBox" style="display: none; position: absolute; bottom: 80px; right: 0; width: 320px; background: var(--card-cyber); border: 1px solid var(--neon-mint-dim); border-radius: 12px; backdrop-filter: blur(10px); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <div style="background: rgba(0, 255, 204, 0.1); padding: 15px; border-bottom: 1px solid var(--border-cyber); display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 16px; margin: 0;"><i class="fa-solid fa-robot" style="color: var(--neon-mint); margin-right: 8px;"></i> Destek Asistanı</h3>
+                <button id="closeSupport" style="background: none; border: none; color: var(--text-secondary); cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="supportChat" style="padding: 15px; height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; font-size: 14px;">Merhaba! Sana nasıl yardımcı olabilirim?</div>
+            </div>
+            <div style="padding: 15px; border-top: 1px solid var(--border-cyber); display: flex; gap: 10px;">
+                <input type="text" id="supportInput" placeholder="Mesajınız..." style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--border-cyber); color: white; padding: 8px 12px; border-radius: 6px; outline: none;">
+                <button id="sendSupport" style="background: var(--neon-mint); color: #000; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold;">Gönder</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN MODALS -->
+    <div id="adminOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 10000; justify-content: center; align-items: center;">
+        
+        <!-- LOGIN FORM -->
+        <div id="adminLoginBox" style="background: var(--card-cyber); padding: 30px; border: 1px solid var(--neon-mint-dim); border-radius: 12px; width: 350px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0; font-size: 20px; color: var(--neon-mint);">Admin Girişi</h2>
+                <button class="closeAdminBtn" style="background: none; border: none; color: white; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <input type="text" id="adminUser" placeholder="Kullanıcı Adı" style="width: 100%; margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid var(--border-cyber); color: white; border-radius: 6px; box-sizing: border-box;">
+            <input type="password" id="adminPass" placeholder="Şifre" style="width: 100%; margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid var(--border-cyber); color: white; border-radius: 6px; box-sizing: border-box;">
+            <label style="display: flex; align-items: center; gap: 8px; color: var(--text-secondary); margin-bottom: 20px; font-size: 13px; cursor: pointer;">
+                <input type="checkbox" id="adminRememberMe" style="accent-color: var(--neon-mint);"> Beni Hatırla
+            </label>
+            <button id="adminLoginBtn" style="width: 100%; padding: 10px; background: var(--neon-mint); color: black; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Giriş Yap</button>
+            <p id="adminError" style="color: #ff4444; margin-top: 10px; font-size: 14px; display: none;">Hatalı giriş!</p>
+        </div>
+
+        <!-- ADMIN PANEL -->
+        <div id="adminPanelBox" style="display: none; background: var(--card-cyber); padding: 30px; border: 1px solid var(--neon-mint-dim); border-radius: 12px; width: 850px; max-height: 80vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-cyber); padding-bottom: 10px;">
+                <h2 style="margin: 0; font-size: 22px; color: var(--neon-mint);">Ring0 Yönetim Paneli</h2>
+                <div>
+                    <span id="currentAdminName" style="margin-right: 15px; color: #aaa;"></span>
+                    <button id="adminLogoutBtn" style="background: rgba(255,0,0,0.2); color: #ff4444; border: 1px solid #ff4444; padding: 5px 10px; border-radius: 6px; cursor: pointer;">Çıkış</button>
+                    <button class="closeAdminBtn" style="background: none; border: none; color: white; cursor: pointer; margin-left: 10px;"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 20px;">
+                <!-- CREATE ADMIN SECTION -->
+                <div style="flex: 1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid var(--border-cyber);">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-user-plus"></i> Yeni Admin Ekle</h3>
+                    <input type="text" id="newAdminUser" placeholder="Yeni Kullanıcı Adı" style="width: 100%; margin-bottom: 10px; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid var(--border-cyber); color: white; border-radius: 6px; box-sizing: border-box;">
+                    <input type="password" id="newAdminPass" placeholder="Yeni Şifre" style="width: 100%; margin-bottom: 15px; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid var(--border-cyber); color: white; border-radius: 6px; box-sizing: border-box;">
+                    <button id="createAdminBtn" style="width: 100%; padding: 8px; background: var(--neon-mint); color: black; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s ease;">Yetki Ver (Kaydet)</button>
+                    <p id="createAdminStatus" style="margin-top: 10px; font-size: 13px;"></p>
+                    
+                    <h3 style="font-size: 16px; margin-top: 20px; margin-bottom: 10px; border-top: 1px solid var(--border-cyber); padding-top: 15px;"><i class="fa-solid fa-users"></i> Mevcut Adminler</h3>
+                    <div id="adminUsersList" style="max-height: 100px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; font-size: 13px;">
+                        <!-- Admins here -->
+                    </div>
+                </div>
+
+                <!-- SUPPORT TICKETS SECTION -->
+                <div style="flex: 2; display: flex; gap: 10px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid var(--border-cyber);">
+                    
+                    <!-- TICKET LIST -->
+                    <div style="flex: 1; border-right: 1px solid var(--border-cyber); padding-right: 10px; display: flex; flex-direction: column;">
+                        <h3 style="font-size: 16px; margin-bottom: 10px;"><i class="fa-solid fa-inbox"></i> Destek Odaları</h3>
+                        <div id="adminTicketList" style="height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px;">
+                            <!-- Tickets list -->
+                        </div>
+                    </div>
+
+                    <!-- TICKET CHAT -->
+                    <div style="flex: 2; display: flex; flex-direction: column;">
+                        <h3 id="activeTicketTitle" style="font-size: 16px; margin-bottom: 10px; color: #aaa;">Oda Seçilmedi</h3>
+                        <div id="adminMessagesList" style="height: 120px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; flex: 1;">
+                            <div style="color: #666; font-size: 13px;">Lütfen soldan bir oda seçin.</div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="adminReplyInput" placeholder="Kullanıcıya yanıt yaz..." style="flex: 1; padding: 6px; background: rgba(0,0,0,0.5); border: 1px solid var(--border-cyber); color: white; border-radius: 4px; box-sizing: border-box;" disabled>
+                            <button id="adminReplyBtn" style="background: var(--neon-mint); color: black; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; opacity: 0.5;" disabled>Yanıtla</button>
+                            <button id="adminCloseTicketBtn" style="background: rgba(255,0,0,0.2); color: #ff4444; border: 1px solid #ff4444; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; opacity: 0.5;" disabled title="Bileti Kapat"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- ADMIN SYSTEM LOGIC ---
+        
+        // Check if master admin exists, if not create it
+        if (!localStorage.getItem('ring0_admins')) {
+            const initialAdmins = {
+                'owner': 'ring0master2026!'
+            };
+            localStorage.setItem('ring0_admins', JSON.stringify(initialAdmins));
+        }
+        
+        // Multi-ticket migration/init
+        if (!localStorage.getItem('ring0_tickets')) {
+            localStorage.setItem('ring0_tickets', JSON.stringify({}));
+        }
+        
+        let currentSession = localStorage.getItem('ring0_current_session');
+        if (!currentSession) {
+            currentSession = 'Bağlanıyor...';
+        }
+
+        // Fetch IP for session ID
+        fetch('https://api.ipify.org?format=json')
+            .then(res => res.json())
+            .then(data => {
+                if(data.ip) {
+                    const newSession = 'IP: ' + data.ip;
+                    const tickets = JSON.parse(localStorage.getItem('ring0_tickets')) || {};
+                    
+                    if (currentSession !== newSession && tickets[currentSession]) {
+                        if (!tickets[newSession]) tickets[newSession] = [];
+                        tickets[newSession] = tickets[newSession].concat(tickets[currentSession]);
+                        delete tickets[currentSession];
+                        localStorage.setItem('ring0_tickets', JSON.stringify(tickets));
+                    }
+                    
+                    currentSession = newSession;
+                    localStorage.setItem('ring0_current_session', currentSession);
+                    
+                    if (document.getElementById('supportBox') && document.getElementById('supportBox').style.display === 'block') {
+                        renderUserChat();
+                    }
+                    if (sessionStorage.getItem('ring0_logged_in')) {
+                        loadAdminTickets();
+                    }
+                }
+            })
+            .catch(() => {
+                if (currentSession === 'Bağlanıyor...' || !localStorage.getItem('ring0_current_session')) {
+                    currentSession = 'Kullanıcı-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+                    localStorage.setItem('ring0_current_session', currentSession);
+                }
+            });
+        let activeAdminTicket = null;
+
+        // Auto login if remembered
+        const rememberedAdmin = localStorage.getItem('ring0_logged_in_remember');
+        if (rememberedAdmin) {
+            sessionStorage.setItem('ring0_logged_in', rememberedAdmin);
+        }
+
+        const adminOverlay = document.getElementById('adminOverlay');
+        const adminLoginBox = document.getElementById('adminLoginBox');
+        const adminPanelBox = document.getElementById('adminPanelBox');
+        
+        // Press Ctrl + Shift + Y to open admin panel
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'y') {
+                adminOverlay.style.display = 'flex';
+                adminOverlay.style.opacity = '0';
+                setTimeout(() => adminOverlay.style.opacity = '1', 10); // Smooth fade in
+                adminOverlay.style.transition = 'opacity 0.3s ease';
+
+                if (sessionStorage.getItem('ring0_logged_in')) {
+                    adminLoginBox.style.display = 'none';
+                    adminPanelBox.style.display = 'block';
+                    document.getElementById('currentAdminName').innerText = "Hoşgeldin, " + sessionStorage.getItem('ring0_logged_in');
+                    loadAdminTickets();
+                    loadAdminMessages();
+                    loadAdminUsersList();
+                } else {
+                    adminLoginBox.style.display = 'block';
+                    adminPanelBox.style.display = 'none';
+                }
+            }
+        });
+
+        document.querySelectorAll('.closeAdminBtn').forEach(btn => {
+            btn.addEventListener('click', () => { 
+                adminOverlay.style.opacity = '0'; 
+                setTimeout(() => adminOverlay.style.display = 'none', 300);
+            });
+        });
+
+        // Login
+        document.getElementById('adminLoginBtn').addEventListener('click', () => {
+            const u = document.getElementById('adminUser').value;
+            const p = document.getElementById('adminPass').value;
+            const admins = JSON.parse(localStorage.getItem('ring0_admins'));
+            
+            if (admins[u] && admins[u] === p) {
+                sessionStorage.setItem('ring0_logged_in', u);
+                if (document.getElementById('adminRememberMe').checked) {
+                    localStorage.setItem('ring0_logged_in_remember', u);
+                } else {
+                    localStorage.removeItem('ring0_logged_in_remember');
+                }
+                document.getElementById('adminError').style.display = 'none';
+                adminLoginBox.style.display = 'none';
+                adminPanelBox.style.display = 'block';
+                document.getElementById('currentAdminName').innerText = "Hoşgeldin, " + u;
+                loadAdminTickets();
+                loadAdminMessages();
+                loadAdminUsersList();
+            } else {
+                document.getElementById('adminError').style.display = 'block';
+            }
+        });
+
+        // Logout
+        document.getElementById('adminLogoutBtn').addEventListener('click', () => {
+            sessionStorage.removeItem('ring0_logged_in');
+            localStorage.removeItem('ring0_logged_in_remember');
+            adminPanelBox.style.display = 'none';
+            adminLoginBox.style.display = 'block';
+            document.getElementById('adminUser').value = '';
+            document.getElementById('adminPass').value = '';
+        });
+
+        // Create Admin
+        document.getElementById('createAdminBtn').addEventListener('click', () => {
+            const nu = document.getElementById('newAdminUser').value;
+            const np = document.getElementById('newAdminPass').value;
+            const status = document.getElementById('createAdminStatus');
+            
+            if (!nu || !np) {
+                status.style.color = '#ff4444';
+                status.innerText = 'Kullanıcı adı ve şifre boş olamaz!';
+                return;
+            }
+            
+            const admins = JSON.parse(localStorage.getItem('ring0_admins'));
+            if (admins[nu]) {
+                status.style.color = '#ff4444';
+                status.innerText = 'Bu admin zaten var!';
+            } else {
+                admins[nu] = np;
+                localStorage.setItem('ring0_admins', JSON.stringify(admins));
+                status.style.color = 'var(--neon-mint)';
+                status.innerText = 'Başarıyla eklendi!';
+                document.getElementById('newAdminUser').value = '';
+                document.getElementById('newAdminPass').value = '';
+                loadAdminUsersList();
+                setTimeout(() => status.innerText='', 3000);
+            }
+        });
+
+        // --- SUPPORT SYSTEM LOGIC ---
+        const supportBtn = document.getElementById('supportBtn');
+        const supportBox = document.getElementById('supportBox');
+        const closeSupport = document.getElementById('closeSupport');
+        const sendSupport = document.getElementById('sendSupport');
+        const supportInput = document.getElementById('supportInput');
+        const supportChat = document.getElementById('supportChat');
+
+        supportBtn.addEventListener('click', () => {
+            supportBox.style.display = supportBox.style.display === 'none' ? 'block' : 'none';
+            if(supportBox.style.display === 'block') renderUserChat();
+        });
+        closeSupport.addEventListener('click', () => {
+            supportBox.style.display = 'none';
+        });
+
+        function renderUserChat() {
+            supportChat.innerHTML = '<div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; font-size: 14px; margin-bottom:10px;">Merhaba! Sana nasıl yardımcı olabilirim?</div>';
+            const tickets = JSON.parse(localStorage.getItem('ring0_tickets')) || {};
+            const messages = tickets[currentSession] || [];
+            
+            messages.forEach(m => {
+                const div = document.createElement('div');
+                div.style.padding = '8px 12px';
+                div.style.borderRadius = '8px';
+                div.style.fontSize = '14px';
+                div.style.maxWidth = '85%';
+                div.style.wordBreak = 'break-word';
+                div.style.marginBottom = '5px';
+                
+                if (m.sender === 'user' || !m.sender) {
+                    div.style.background = 'rgba(0, 255, 204, 0.2)';
+                    div.style.color = 'white';
+                    div.style.alignSelf = 'flex-end';
+                    div.style.border = '1px solid var(--neon-mint-dim)';
+                    div.innerText = m.text;
+                } else {
+                    // Admin message
+                    div.style.background = 'rgba(255, 68, 68, 0.15)'; 
+                    div.style.color = '#ff9999';
+                    div.style.alignSelf = 'flex-start';
+                    div.style.border = '1px solid rgba(255, 68, 68, 0.3)';
+                    const adminLabel = m.adminName ? m.adminName : "YÖNETİCİ";
+                    div.innerHTML = `<strong style="color: #ff4444; font-size:12px; display:block; margin-bottom:3px;"><i class="fa-solid fa-crown"></i> YÖNETİCİ (${adminLabel}):</strong> ${m.text}`;
+                }
+                supportChat.appendChild(div);
+            });
+            supportChat.scrollTop = supportChat.scrollHeight;
+        }
+
+        sendSupport.addEventListener('click', () => {
+            const text = supportInput.value.trim();
+            if (text) {
+                const loggedAdmin = sessionStorage.getItem('ring0_logged_in');
+                const isAd = loggedAdmin ? 'admin' : 'user';
+                const tickets = JSON.parse(localStorage.getItem('ring0_tickets')) || {};
+                
+                if (!tickets[currentSession]) tickets[currentSession] = [];
+                
+                tickets[currentSession].push({ 
+                    time: new Date().toLocaleTimeString(), 
+                    text: text, 
+                    sender: isAd,
+                    adminName: loggedAdmin
+                });
+                
+                localStorage.setItem('ring0_tickets', JSON.stringify(tickets));
+                supportInput.value = '';
+                renderUserChat();
+                if(loggedAdmin) {
+                    loadAdminTickets();
+                    loadAdminMessages(); 
+                }
+            }
+        });
+        
+        function loadAdminUsersList() {
+            const list = document.getElementById('adminUsersList');
+            if(!list) return;
+            const admins = JSON.parse(localStorage.getItem('ring0_admins'));
+            list.innerHTML = '';
+            for(let u in admins) {
+                list.innerHTML += `<div style="background: rgba(255,255,255,0.05); padding: 5px 8px; border-radius: 4px; display: flex; justify-content: space-between;"><span><i class="fa-solid fa-user" style="color:var(--neon-mint); font-size: 10px; margin-right:5px;"></i> ${u}</span> <span style="color:#aaa;">Şifre: ${admins[u]}</span></div>`;
+            }
+        }
+
+        // Trigger send on Enter
+        supportInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendSupport.click();
+        });
+
+        // Admin Reply Logic
+        document.getElementById('adminReplyBtn').addEventListener('click', () => {
+            if (!activeAdminTicket) return;
+            const input = document.getElementById('adminReplyInput');
+            const text = input.value.trim();
+            if (text) {
+                const loggedAdmin = sessionStorage.getItem('ring0_logged_in');
+                const tickets = JSON.parse(localStorage.getItem('ring0_tickets'));
+                if(!tickets[activeAdminTicket]) tickets[activeAdminTicket] = [];
+                
+                tickets[activeAdminTicket].push({ 
+                    time: new Date().toLocaleTimeString(), 
+                    text: text, 
+                    sender: 'admin',
+                    adminName: loggedAdmin
+                });
+                
+                localStorage.setItem('ring0_tickets', JSON.stringify(tickets));
+                input.value = '';
+                loadAdminMessages();
+                
+                if(activeAdminTicket === currentSession && supportBox.style.display === 'block') {
+                    renderUserChat();
+                }
+            }
+        });
+        document.getElementById('adminReplyInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') document.getElementById('adminReplyBtn').click();
+        });
+
+        // Close Ticket Logic
+        document.getElementById('adminCloseTicketBtn').addEventListener('click', () => {
+            if (!activeAdminTicket) return;
+            if (confirm(activeAdminTicket + " odasını silmek istediğinize emin misiniz?")) {
+                const tickets = JSON.parse(localStorage.getItem('ring0_tickets')) || {};
+                if (tickets[activeAdminTicket]) {
+                    delete tickets[activeAdminTicket];
+                    localStorage.setItem('ring0_tickets', JSON.stringify(tickets));
+                    activeAdminTicket = null;
+                    loadAdminTickets();
+                    loadAdminMessages();
+                }
+            }
+        });
+
+        function loadAdminTickets() {
+            const list = document.getElementById('adminTicketList');
+            if(!list) return;
+            const tickets = JSON.parse(localStorage.getItem('ring0_tickets')) || {};
+            list.innerHTML = '';
+            
+            const ticketKeys = Object.keys(tickets);
+            if (ticketKeys.length === 0) {
+                list.innerHTML = '<div style="color: #666; font-size: 13px;">Hiç oda yok.</div>';
+                return;
+            }
+            
+            ticketKeys.forEach(t => {
+                const div = document.createElement('div');
+                div.style.padding = '8px';
+                div.style.borderRadius = '5px';
+                div.style.fontSize = '12px';
+                div.style.cursor = 'pointer';
+                div.style.background = activeAdminTicket === t ? 'rgba(0, 255, 204, 0.2)' : 'rgba(255,255,255,0.05)';
+                div.style.borderLeft = activeAdminTicket === t ? '3px solid var(--neon-mint)' : '3px solid transparent';
+                div.innerHTML = `<i class="fa-solid fa-user" style="color:var(--text-secondary); margin-right:5px;"></i> ${t}`;
+                div.addEventListener('click', () => {
+                    activeAdminTicket = t;
+                    loadAdminTickets(); 
+                    loadAdminMessages(); 
+                });
+                list.appendChild(div);
+            });
+        }
+
+        function loadAdminMessages() {
+            const list = document.getElementById('adminMessagesList');
+            const title = document.getElementById('activeTicketTitle');
+            const replyInp = document.getElementById('adminReplyInput');
+            const replyBtn = document.getElementById('adminReplyBtn');
+            const closeBtn = document.getElementById('adminCloseTicketBtn');
+            
+            if (!activeAdminTicket) {
+                if(list) list.innerHTML = '<div style="color: #666; font-size: 13px;">Lütfen soldan bir oda seçin.</div>';
+                if(title) title.innerText = 'Oda Seçilmedi';
+                if(replyInp) replyInp.disabled = true;
+                if(replyBtn) { replyBtn.disabled = true; replyBtn.style.opacity = '0.5'; }
+                if(closeBtn) { closeBtn.disabled = true; closeBtn.style.opacity = '0.5'; }
+                return;
+            }
+            
+            title.innerText = `Seçili: ${activeAdminTicket}`;
+            replyInp.disabled = false;
+            replyBtn.disabled = false;
+            replyBtn.style.opacity = '1';
+            if(closeBtn) { closeBtn.disabled = false; closeBtn.style.opacity = '1'; }
+            
+            const tickets = JSON.parse(localStorage.getItem('ring0_tickets')) || {};
+            const messages = tickets[activeAdminTicket] || [];
+            
+            list.innerHTML = '';
+            if (messages.length === 0) {
+                list.innerHTML = '<div style="color: #666; font-size: 13px;">Henüz mesaj yok.</div>';
+            } else {
+                messages.forEach(m => {
+                    const div = document.createElement('div');
+                    div.style.padding = '8px';
+                    div.style.borderRadius = '5px';
+                    div.style.fontSize = '13px';
+                    if (m.sender === 'user' || !m.sender) {
+                        div.style.background = 'rgba(255,255,255,0.05)';
+                        div.style.borderLeft = '3px solid var(--neon-mint)';
+                        div.innerHTML = `<span style="color: #aaa; font-size: 11px;">[${m.time}] Kullanıcı:</span> ${m.text}`;
+                    } else {
+                        div.style.background = 'rgba(255,68,68,0.1)';
+                        div.style.borderLeft = '3px solid #ff4444';
+                        div.innerHTML = `<span style="color: #ff9999; font-size: 11px;">[${m.time}] ${m.adminName || 'Yönetici'}:</span> ${m.text}`;
+                    }
+                    list.appendChild(div);
+                });
+                list.scrollTop = list.scrollHeight;
+            }
+        }
+        
+        function loadAdminUsersList() {
+            const list = document.getElementById('adminUsersList');
+            if(!list) return;
+            const admins = JSON.parse(localStorage.getItem('ring0_admins'));
+            list.innerHTML = '';
+            for(let u in admins) {
+                const isOwner = u === 'owner';
+                const deleteBtn = isOwner ? '' : `<button onclick="deleteAdmin('${u}')" style="background: rgba(255,0,0,0.2); border: none; color: #ff4444; border-radius: 4px; padding: 2px 5px; cursor: pointer; margin-left: 10px; font-size: 11px; transition: all 0.2s;"><i class="fa-solid fa-trash"></i></button>`;
+                
+                list.innerHTML += `<div style="background: rgba(255,255,255,0.05); padding: 5px 8px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                    <span><i class="fa-solid fa-user" style="color:var(--neon-mint); font-size: 10px; margin-right:5px;"></i> ${u}</span> 
+                    <div>
+                        <span style="color:#aaa; font-size: 11px;">Şifre: ${admins[u]}</span>
+                        ${deleteBtn}
+                    </div>
+                </div>`;
+            }
+        }
+
+        window.deleteAdmin = function(username) {
+            if (username === 'owner') return; 
+            const admins = JSON.parse(localStorage.getItem('ring0_admins'));
+            if (admins[username]) {
+                delete admins[username];
+                localStorage.setItem('ring0_admins', JSON.stringify(admins));
+                loadAdminUsersList();
+            }
+        };
+    </script>
 </body>
 </html>
