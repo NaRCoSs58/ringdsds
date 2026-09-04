@@ -2461,8 +2461,9 @@
         });
         
         let currentSession = localStorage.getItem('ring0_current_session');
+        if (currentSession) currentSession = currentSession.replace(/\./g, '_');
         if (!currentSession) {
-            currentSession = 'Bağlanıyor...';
+            currentSession = 'Baglaniyor';
         }
 
         // Fetch IP for session ID
@@ -2470,23 +2471,7 @@
             .then(res => res.json())
             .then(data => {
                 if(data.ip) {
-                    const newSession = 'IP: ' + data.ip;
-                    
-                    if (currentSession !== newSession && currentSession !== 'Bağlanıyor...') {
-                        // Migrate tickets from old session to new IP
-                        db.ref('tickets/' + currentSession).once('value').then(snap => {
-                            const oldMsgs = snap.val();
-                            if (oldMsgs) {
-                                db.ref('tickets/' + newSession).once('value').then(newSnap => {
-                                    let newMsgs = newSnap.val() || [];
-                                    newMsgs = newMsgs.concat(oldMsgs);
-                                    db.ref('tickets/' + newSession).set(newMsgs);
-                                    db.ref('tickets/' + currentSession).remove();
-                                });
-                            }
-                        });
-                    }
-                    
+                    const newSession = 'IP: ' + data.ip.replace(/\./g, '_');
                     currentSession = newSession;
                     localStorage.setItem('ring0_current_session', currentSession);
                     
@@ -2499,19 +2484,13 @@
                 }
             })
             .catch(() => {
-                if (currentSession === 'Bağlanıyor...' || !localStorage.getItem('ring0_current_session')) {
+                if (currentSession === 'Baglaniyor' || !localStorage.getItem('ring0_current_session')) {
                     currentSession = 'Kullanıcı-' + Math.random().toString(36).substr(2, 4).toUpperCase();
                     localStorage.setItem('ring0_current_session', currentSession);
                 }
             });
             
         let activeAdminTicket = null;
-
-        // Auto login if remembered
-        const rememberedAdmin = localStorage.getItem('ring0_logged_in_remember');
-        if (rememberedAdmin) {
-            sessionStorage.setItem('ring0_logged_in', rememberedAdmin);
-        }
 
         const adminOverlay = document.getElementById('adminOverlay');
         const adminLoginBox = document.getElementById('adminLoginBox');
@@ -2522,9 +2501,9 @@
             if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'y') {
                 adminOverlay.style.display = 'flex';
                 adminOverlay.style.opacity = '0';
-                setTimeout(() => adminOverlay.style.opacity = '1', 10); // Smooth fade in
-                adminOverlay.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => adminOverlay.style.opacity = '1', 10);
 
+                // Check if actively logged in
                 if (sessionStorage.getItem('ring0_logged_in')) {
                     adminLoginBox.style.display = 'none';
                     adminPanelBox.style.display = 'block';
@@ -2533,6 +2512,7 @@
                     loadAdminMessages();
                     loadAdminUsersList();
                 } else {
+                    // Force show login box
                     adminLoginBox.style.display = 'block';
                     adminPanelBox.style.display = 'none';
                 }
@@ -2548,18 +2528,13 @@
 
         // Login
         document.getElementById('adminLoginBtn').addEventListener('click', () => {
-            const u = document.getElementById('adminUser').value;
-            const p = document.getElementById('adminPass').value;
+            const u = document.getElementById('adminUser').value.trim();
+            const p = document.getElementById('adminPass').value.trim();
             
             db.ref('admins/' + u).once('value').then(snap => {
                 const pass = snap.val();
                 if (pass && pass === p) {
                     sessionStorage.setItem('ring0_logged_in', u);
-                    if (document.getElementById('adminRememberMe').checked) {
-                        localStorage.setItem('ring0_logged_in_remember', u);
-                    } else {
-                        localStorage.removeItem('ring0_logged_in_remember');
-                    }
                     document.getElementById('adminError').style.display = 'none';
                     adminLoginBox.style.display = 'none';
                     adminPanelBox.style.display = 'block';
@@ -2570,13 +2545,15 @@
                 } else {
                     document.getElementById('adminError').style.display = 'block';
                 }
+            }).catch(err => {
+                console.error("Login error:", err);
+                document.getElementById('adminError').style.display = 'block';
             });
         });
 
         // Logout
         document.getElementById('adminLogoutBtn').addEventListener('click', () => {
             sessionStorage.removeItem('ring0_logged_in');
-            localStorage.removeItem('ring0_logged_in_remember');
             adminPanelBox.style.display = 'none';
             adminLoginBox.style.display = 'block';
             document.getElementById('adminUser').value = '';
@@ -2585,8 +2562,8 @@
 
         // Create Admin
         document.getElementById('createAdminBtn').addEventListener('click', () => {
-            const nu = document.getElementById('newAdminUser').value;
-            const np = document.getElementById('newAdminPass').value;
+            const nu = document.getElementById('newAdminUser').value.trim();
+            const np = document.getElementById('newAdminPass').value.trim();
             const status = document.getElementById('createAdminStatus');
             
             if (!nu || !np) {
@@ -2620,17 +2597,15 @@
         const supportInput = document.getElementById('supportInput');
         const supportChat = document.getElementById('supportChat');
 
-        // Realtime user chat listener
         let userChatListener = null;
 
         supportBtn.addEventListener('click', () => {
             supportBox.style.display = supportBox.style.display === 'none' ? 'block' : 'none';
             if(supportBox.style.display === 'block') {
                 renderUserChat();
-                // Attach realtime listener for this session
                 if(!userChatListener) {
                     userChatListener = db.ref('tickets/' + currentSession).on('value', (snap) => {
-                        renderUserChatFromSnap(snap.val() || []);
+                        renderUserChatFromSnap(snap.val());
                     });
                 }
             } else {
@@ -2649,8 +2624,13 @@
             }
         });
 
-        function renderUserChatFromSnap(messages) {
+        function renderUserChatFromSnap(data) {
             supportChat.innerHTML = '<div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; font-size: 14px; margin-bottom:10px;">Merhaba! Sana nasıl yardımcı olabilirim?</div>';
+            
+            if (!data) return;
+            
+            // Convert Firebase object to array if needed
+            const messages = Array.isArray(data) ? data : Object.values(data);
             
             messages.forEach(m => {
                 const div = document.createElement('div');
@@ -2682,7 +2662,7 @@
 
         function renderUserChat() {
             db.ref('tickets/' + currentSession).once('value').then(snap => {
-                renderUserChatFromSnap(snap.val() || []);
+                renderUserChatFromSnap(snap.val());
             });
         }
 
@@ -2692,18 +2672,14 @@
                 const loggedAdmin = sessionStorage.getItem('ring0_logged_in');
                 const isAd = loggedAdmin ? 'admin' : 'user';
                 
-                db.ref('tickets/' + currentSession).once('value').then(snap => {
-                    const messages = snap.val() || [];
-                    messages.push({ 
-                        time: new Date().toLocaleTimeString(), 
-                        text: text, 
-                        sender: isAd,
-                        adminName: loggedAdmin
-                    });
-                    db.ref('tickets/' + currentSession).set(messages).then(() => {
-                        supportInput.value = '';
-                    });
-                });
+                db.ref('tickets/' + currentSession).push({ 
+                    time: new Date().toLocaleTimeString(), 
+                    text: text, 
+                    sender: isAd,
+                    adminName: loggedAdmin
+                }).then(() => {
+                    supportInput.value = '';
+                }).catch(err => console.error("Message send error:", err));
             }
         });
         
@@ -2728,7 +2704,6 @@
             });
         }
 
-        // Trigger send on Enter
         supportInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') sendSupport.click();
         });
@@ -2740,17 +2715,14 @@
             const text = input.value.trim();
             if (text) {
                 const loggedAdmin = sessionStorage.getItem('ring0_logged_in');
-                db.ref('tickets/' + activeAdminTicket).once('value').then(snap => {
-                    const messages = snap.val() || [];
-                    messages.push({ 
-                        time: new Date().toLocaleTimeString(), 
-                        text: text, 
-                        sender: 'admin',
-                        adminName: loggedAdmin
-                    });
-                    db.ref('tickets/' + activeAdminTicket).set(messages).then(() => {
-                        input.value = '';
-                    });
+                
+                db.ref('tickets/' + activeAdminTicket).push({ 
+                    time: new Date().toLocaleTimeString(), 
+                    text: text, 
+                    sender: 'admin',
+                    adminName: loggedAdmin
+                }).then(() => {
+                    input.value = '';
                 });
             }
         });
@@ -2772,39 +2744,45 @@
 
         let adminTicketsListener = null;
         let adminActiveTicketListener = null;
+        let currentTicketsData = {};
 
-        function loadAdminTickets() {
+        function renderAdminTickets() {
             const list = document.getElementById('adminTicketList');
             if(!list) return;
+            list.innerHTML = '';
             
+            const ticketKeys = Object.keys(currentTicketsData);
+            if (ticketKeys.length === 0) {
+                list.innerHTML = '<div style="color: #666; font-size: 13px;">Hiç oda yok.</div>';
+                return;
+            }
+            
+            ticketKeys.forEach(t => {
+                const div = document.createElement('div');
+                div.style.padding = '8px';
+                div.style.borderRadius = '5px';
+                div.style.fontSize = '12px';
+                div.style.cursor = 'pointer';
+                div.style.background = activeAdminTicket === t ? 'rgba(0, 255, 204, 0.2)' : 'rgba(255,255,255,0.05)';
+                div.style.borderLeft = activeAdminTicket === t ? '3px solid var(--neon-mint)' : '3px solid transparent';
+                div.innerHTML = `<i class="fa-solid fa-user" style="color:var(--text-secondary); margin-right:5px;"></i> ${t}`;
+                div.addEventListener('click', () => {
+                    activeAdminTicket = t;
+                    renderAdminTickets(); 
+                    loadAdminMessages(); 
+                });
+                list.appendChild(div);
+            });
+        }
+
+        function loadAdminTickets() {
             if(!adminTicketsListener) {
                 adminTicketsListener = db.ref('tickets').on('value', snap => {
-                    const tickets = snap.val() || {};
-                    list.innerHTML = '';
-                    
-                    const ticketKeys = Object.keys(tickets);
-                    if (ticketKeys.length === 0) {
-                        list.innerHTML = '<div style="color: #666; font-size: 13px;">Hiç oda yok.</div>';
-                        return;
-                    }
-                    
-                    ticketKeys.forEach(t => {
-                        const div = document.createElement('div');
-                        div.style.padding = '8px';
-                        div.style.borderRadius = '5px';
-                        div.style.fontSize = '12px';
-                        div.style.cursor = 'pointer';
-                        div.style.background = activeAdminTicket === t ? 'rgba(0, 255, 204, 0.2)' : 'rgba(255,255,255,0.05)';
-                        div.style.borderLeft = activeAdminTicket === t ? '3px solid var(--neon-mint)' : '3px solid transparent';
-                        div.innerHTML = `<i class="fa-solid fa-user" style="color:var(--text-secondary); margin-right:5px;"></i> ${t}`;
-                        div.addEventListener('click', () => {
-                            activeAdminTicket = t;
-                            loadAdminTickets(); // Re-render to show active
-                            loadAdminMessages(); 
-                        });
-                        list.appendChild(div);
-                    });
+                    currentTicketsData = snap.val() || {};
+                    renderAdminTickets();
                 });
+            } else {
+                renderAdminTickets();
             }
         }
 
@@ -2816,7 +2794,6 @@
             const closeBtn = document.getElementById('adminCloseTicketBtn');
             
             if (adminActiveTicketListener) {
-                // Detach previous listener
                 db.ref('tickets').off('value', adminActiveTicketListener);
                 adminActiveTicketListener = null;
             }
@@ -2837,11 +2814,13 @@
             if(closeBtn) { closeBtn.disabled = false; closeBtn.style.opacity = '1'; }
             
             adminActiveTicketListener = db.ref('tickets/' + activeAdminTicket).on('value', snap => {
-                const messages = snap.val() || [];
+                const data = snap.val();
                 list.innerHTML = '';
-                if (messages.length === 0) {
+                
+                if (!data) {
                     list.innerHTML = '<div style="color: #666; font-size: 13px;">Henüz mesaj yok.</div>';
                 } else {
+                    const messages = Array.isArray(data) ? data : Object.values(data);
                     messages.forEach(m => {
                         const div = document.createElement('div');
                         div.style.padding = '8px';
