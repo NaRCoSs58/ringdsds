@@ -1598,9 +1598,20 @@
                     { title: "Lifetime", priceTRY: 2000, priceUSD: 60, link: "" }
                 ]
             },
+            cloak: {
+                name: "Cloak",
+                status: "online",
+                functions: ["VAN 152 Bypass", "Val 5 Bypass", "Reinstall Required", "BIOS Update Required"],
+                specs: ["All CPU & GPU Support", "All Motherboard Support", "Win 10/11 Support", "Hvci On", "Tpm On", "Secure Boot On"],
+                misc: ["Anti-Van 152", "Anti-Val 5"],
+                prices: [
+                    { title: "Onetime", priceTRY: 1000, priceUSD: 30, link: "" },
+                    { title: "Lifetime", priceTRY: 1800, priceUSD: 55, link: "" }
+                ]
+            },
             valemu: {
                 name: "Val Emulator",
-                status: "online",
+                status: "maintenance",
                 functions: ["Fully V4nguard Emulation", "VAN 152 Bypass", "Val 5 Bypass", "Can Queue", "1 Pc Method", "Bypass All Popups"],
                 specs: ["Support V4lorant & L34gue of L3g3nds", "All CPU & GPU Support", "All Motherboard Support", "Win 10/11 Support", "Hvci On/Off", "Tpm On/Off", "Secure Boot On/Off"],
                 misc: ["Anti Van 152", "Anti Val 5", "Anti Detection", "Heartbeat Emulator"],
@@ -1622,6 +1633,13 @@
             if (stored) {
                 try {
                     productDetails = JSON.parse(stored);
+                    for (let key in defaultProductDetails) {
+                        if (!productDetails[key]) {
+                            productDetails[key] = defaultProductDetails[key];
+                        } else {
+                            productDetails[key].status = defaultProductDetails[key].status;
+                        }
+                    }
                 } catch(e) {
                     productDetails = JSON.parse(JSON.stringify(defaultProductDetails));
                 }
@@ -1646,14 +1664,21 @@
                 
                 const priceTags = prod.prices.map(p => `<span class="price-tag">${p.title}: ${p.priceTRY} TL</span>`).join('');
                 
+                const isMaintenance = prod.status === 'maintenance';
+                const statusBadge = isMaintenance 
+                    ? `<span style="font-size: 0.65rem; font-weight: 800; background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); padding: 3px 9px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px; margin-left: 8px; vertical-align: middle;"><span style="width: 5px; height: 5px; border-radius: 50%; background: #f59e0b; box-shadow: 0 0 6px #f59e0b; display: inline-block;"></span> BAKIMDA</span>` 
+                    : '';
+                const btnText = isMaintenance ? 'BAKIMDA / DETAYLAR' : 'DETAYLAR & SATIN AL';
+                const btnStyle = isMaintenance ? 'background: linear-gradient(135deg, #f59e0b, #d97706);' : '';
+                
                 card.innerHTML = `
                     <div class="product-header">
-                        <div class="product-name">${prod.name}</div>
+                        <div class="product-name">${prod.name} ${statusBadge}</div>
                         <div class="product-features-preview">${previewTags}</div>
                     </div>
                     <div>
                         <div class="price-row">${priceTags}</div>
-                        <button class="detail-btn" onclick="showProductModal('${key}')">DETAYLAR & SATIN AL</button>
+                        <button class="detail-btn" style="${btnStyle}" onclick="showProductModal('${key}')">${btnText}</button>
                     </div>
                 `;
                 container.appendChild(card);
@@ -1734,7 +1759,15 @@
             const txtTechSpecs = 'TEKNİK ÖZELLİKLER';
             const txtMisc = 'EKSTRA';
             const txtPrices = 'FİYATLAR & ÖDEME';
-            const txtSafe = 'UNDETECTED';
+            
+            let badgeHtml = '';
+            if (prod.status === 'maintenance') {
+                badgeHtml = `<div class="security-badge" style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); color: #f59e0b;"><span style="background: #f59e0b; box-shadow: 0 0 6px #f59e0b;"></span> BAKIMDA / MAINTENANCE</div>`;
+            } else if (prod.status === 'detected') {
+                badgeHtml = `<div class="security-badge" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #ef4444;"><span style="background: #ef4444; box-shadow: 0 0 6px #ef4444;"></span> DETECTED</div>`;
+            } else {
+                badgeHtml = `<div class="security-badge"><span></span> UNDETECTED</div>`;
+            }
 
             let html = `
             <style>
@@ -1745,9 +1778,17 @@
             </style>
             <div style="position: relative;">
                 <button onclick="closeModal('detailModal')" style="position: absolute; top: 0px; right: 0px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1rem; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'; this.style.color='#fff';" onmouseout="this.style.background='rgba(255,255,255,0.03)'; this.style.color='#94a3b8';">✕</button>
-                <div class="security-badge"><span></span> ${txtSafe}</div>
+                ${badgeHtml}
                 <h2 style="color: #ffffff; font-size: 1.8rem; margin-bottom: 20px; letter-spacing: -0.5px;">${prod.name}</h2>
             `;
+
+            if (prod.status === 'maintenance') {
+                html += `
+                    <div style="background: rgba(245, 158, 11, 0.08); border-left: 3px solid #f59e0b; border-radius: 12px; padding: 12px 16px; margin-bottom: 20px; font-size: 0.8rem; color: #fbbf24; line-height: 1.5;">
+                        <i class="fa-solid fa-triangle-exclamation" style="margin-right: 6px;"></i> <strong>Bilgilendirme:</strong> Bu ürün şu anda güvenlik veya oyun güncellemesi sebebiyle geçici olarak bakımdadır. Güncelleme tamamlandığında Discord sunucumuzdan duyurulacaktır.
+                    </div>
+                `;
+            }
 
             if (prod.functions && prod.functions.length > 0) {
                 html += `<div style="margin-bottom: 24px;"><div style="color: var(--neon-mint); font-weight: 700; margin-bottom: 12px; font-size: 0.85rem; letter-spacing: 0.5px;">${txtMainFunc}</div><div style="display: flex; flex-wrap: wrap; gap: 8px;">`;
@@ -1813,9 +1854,15 @@
                 </label>
             </div>`;
 
-            html += `
-                <button onclick="handlePurchase('${productKey}')" style="width: 100%; background: linear-gradient(135deg, var(--neon-mint), #0b91d6); border: none; padding: 15px; border-radius: 12px; color: #030611; font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px var(--neon-mint-glow);" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='none';">SATIN AL</button>
-            `;
+            if (prod.status === 'maintenance') {
+                html += `
+                    <button onclick="window.open(siteSettings.discordLink, '_blank')" style="width: 100%; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; padding: 15px; border-radius: 12px; color: #030611; font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='none';"><i class="fa-brands fa-discord"></i> BAKIMDA - DİSCORD'DAN BİLGİ AL</button>
+                `;
+            } else {
+                html += `
+                    <button onclick="handlePurchase('${productKey}')" style="width: 100%; background: linear-gradient(135deg, var(--neon-mint), #0b91d6); border: none; padding: 15px; border-radius: 12px; color: #030611; font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px var(--neon-mint-glow);" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='none';">SATIN AL</button>
+                `;
+            }
 
             html += `</div></div>`;
             document.getElementById('modalContent').innerHTML = html;
