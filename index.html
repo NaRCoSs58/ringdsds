@@ -184,43 +184,6 @@
             }
         }
 
-        /* Fullscreen Video Background for GitHub Pages */
-        .video-bg-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            z-index: 0;
-            pointer-events: none;
-            background-color: var(--bg-cyber);
-        }
-
-        #bg-video {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-        }
-
-        .video-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, rgba(3, 6, 17, 0.45) 0%, rgba(3, 6, 17, 0.82) 100%),
-                        linear-gradient(180deg, rgba(3, 6, 17, 0.65) 0%, rgba(3, 6, 17, 0.35) 50%, rgba(3, 6, 17, 0.9) 100%);
-            pointer-events: none;
-        }
-
         /* Particles Background Canvas */
         #bg-canvas {
             position: fixed;
@@ -230,7 +193,7 @@
             height: 100%;
             pointer-events: none;
             z-index: 1;
-            opacity: 0.85;
+            opacity: 0.8;
         }
 
         ::-webkit-scrollbar {
@@ -1385,14 +1348,6 @@
         </article>
     </section>
 
-    <!-- Fullscreen Background Video (GitHub Pages uyumlu: video.mp4) -->
-    <div class="video-bg-container" id="videoBgContainer">
-        <video id="bg-video" autoplay loop muted playsinline webkit-playsinline preload="auto">
-            <source src="video.mp4" type="video/mp4">
-        </video>
-        <div class="video-overlay"></div>
-    </div>
-
     <canvas id="bg-canvas"></canvas>
     
     <!-- Cursor elements -->
@@ -2326,6 +2281,11 @@
 
         function drawBackground() {
             ctx.clearRect(0, 0, width, height);
+            let gradient = ctx.createRadialGradient(width / 2, height / 2, 10, width / 2, height / 2, Math.max(width, height));
+            gradient.addColorStop(0, '#060a1a');
+            gradient.addColorStop(1, '#020308');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
             
             for (let i = 0; i < particles.length; i++) {
                 let p = particles[i];
@@ -2367,23 +2327,6 @@
             requestAnimationFrame(drawBackground);
         }
         drawBackground();
-
-        // Autoplay güvence sistemi (Mobil ve Masaüstü tarayıcı kısıtlamalarına karşı)
-        const bgVideoEl = document.getElementById('bg-video');
-        if (bgVideoEl) {
-            bgVideoEl.muted = true;
-            const playPromise = bgVideoEl.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(() => {
-                    const forcePlayOnAction = () => {
-                        bgVideoEl.play().catch(() => {});
-                    };
-                    document.addEventListener('click', forcePlayOnAction, { once: true });
-                    document.addEventListener('touchstart', forcePlayOnAction, { once: true });
-                    document.addEventListener('scroll', forcePlayOnAction, { once: true });
-                });
-            }
-        }
     </script>
 
     <!-- FIREBASE SDK -->
