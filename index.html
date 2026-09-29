@@ -1912,28 +1912,35 @@
             return cleaned;
         }
 
-        // Cleaned fallback reviews
+        // Gerçek müşteri yorumları (yorumlar.txt'den)
         const fallbackVouches = [
-            { "text": "Destek ekibi tabii ki en iyisi, anında ilgilendi ve sorunsuz bypass yaptı. +rep", "stars": 5 },
-            { "text": "Ufak bir sorun yaşamıştım, ticket açar açmaz 5 dakika içinde çözdüler. Teşekkürler.", "stars": 5 },
-            { "text": "Yazılım hızlı ve güvenilir, her zamanki gibi kalitesini konuşturdu.", "stars": 5 },
-            { "text": "Destek ekibi serialleri değiştirdi, van152 banım anında kalktı. Eline sağlık.", "stars": 5 },
-            { "text": "Ben yetkililere başta güvenmemiştim ama gerçekten işinin ehli çıktılar. Helal olsun.", "stars": 5 },
-            { "text": "Diğer firmalar gibi oyalamıyorlar, direkt çözüm sunuyorlar. 10/10 hizmet.", "stars": 5 },
-            { "text": "Bu piyasadaki en dürüst ve işini iyi yapan firmalardan biri.", "stars": 5 },
-            { "text": "İşinin adamı! Bu fiyata böyle kaliteli bypass bulamazsınız arkadaşlar. Kesinlikle +rep.", "stars": 5 },
-            { "text": "Güzel hile, val5 ve van152 kalktı, 1 haftadır sorunsuz oynuyorum.", "stars": 5 },
-            { "text": "On numara! Gecenin bu saatinde bile anında dönüş sağladılar, destek mükemmel.", "stars": 5 },
-            { "text": "Gönül rahatlığı ile alışveriş yapabilirsiniz. Sistemleri harika çalışıyor.", "stars": 5 },
-            { "text": "Banım 10 dakikada açıldı. Bu kadar hızlı olmasını beklemiyordum, harikasınız.", "stars": 5 },
-            { "text": "Sorunsuz, bansız, tertemiz yazılım. Çok memnun kaldım. ❤️", "stars": 5 },
-            { "text": "Alacak herkese öneririm. Bir sorun olduğunda ticket üzerinden anında destek veriyorlar.", "stars": 5 },
-            { "text": "Tüm HWID seriallerim değişti, cihaz sıfır gibi oldu. Spoofer harika.", "stars": 5 },
-            { "text": "Ekip her seferinde inanılmaz yardımcı oluyor. Satış sonrası destek efsane.", "stars": 5 },
-            { "text": "Çok iyi, banım açıldı, oyuna sorunsuz girebiliyorum.", "stars": 5 },
-            { "text": "Yardımlarınız için çok teşekkürler, kesinlikle tavsiye ediyorum.", "stars": 5 },
-            { "text": "Van152 banı kalktı, destek ekibi çok ilgili. Her kuruşuna değer.", "stars": 5 },
-            { "text": "Bypass sorunsuz çalışıyor, güncellemeler çok hızlı yapılıyor. Tavsiye ederim.", "stars": 5 }
+            { "text": "very good.", "stars": 5, "user": "Burak#4281" },
+            { "text": "kesinlikle guvenilir van 152 sorunum duzeldi basarili spoof tesekkurler", "stars": 5, "user": "Emre#9173" },
+            { "text": "Güvenilir ve samimiler spoofdan çok memnunum teşekkürler", "stars": 5, "user": "Kaan#5520" },
+            { "text": "Neo kardeşim halletti işinin hakkını veriyor güvenle alabilirsiniz adammm adammm", "stars": 5, "user": "Yusuf#3347" },
+            { "text": "ring 0 kalitesi", "stars": 5, "user": "Arda#8812" },
+            { "text": "+rep sıkıntısı yok perm woofer", "stars": 5, "user": "Onur#6654" },
+            { "text": "get good get ring 0", "stars": 5, "user": "Berkay#2209" },
+            { "text": "genç arkadaşları destekleyelim lütfen arkadaş sağ olsun çok ilgili işine her şey için teşekkür ediyorum güvenerek alabilirsiniz.", "stars": 5, "user": "Serkan#7741" },
+            { "text": "Uzun bir süre valorant teşekkür ederim canımsın güvenilir.", "stars": 5, "user": "Mert#1198" },
+            { "text": "gerçekten kaliteli bir spoofer", "stars": 5, "user": "Alp#4430" },
+            { "text": "başarılı", "stars": 5, "user": "Oğuzhan#5567" },
+            { "text": "eline sağlık kardeşim hızlı bi şekilde halletti tavsiye ederim", "stars": 5, "user": "Efe#3392" },
+            { "text": "yaptığın spoof gibisi yok başkasında", "stars": 5, "user": "Volkan#8805" },
+            { "text": "neo kardesım cok ilgili tesekkur edeıorum", "stars": 5, "user": "Deniz#2216" },
+            { "text": "hızlı ve güvenilir", "stars": 5, "user": "Furkan#9948" },
+            { "text": "ürün çok güzel elinize sağlık 30 dakika sürdü sürmedi her şeyi ile ilgilendiler kurdular ellerinize sağlık", "stars": 5, "user": "Baran#1173" },
+            { "text": "arkadaşlar mutlaka hizmet almalısınız hizmette sınır yok çok ilgilendiler kardeşim sağ olsun", "stars": 5, "user": "Tolga#6684" },
+            { "text": "king güvenilir seri çözüm eksiksiz her şeyi tamamladı gece gündüz fark etmez", "stars": 5, "user": "Batuhan#4459" },
+            { "text": "kardeşimin ellerine sağlık gecenin bu saatinde benimle ilgilendi emeğine sağlık", "stars": 5, "user": "Can#7720" },
+            { "text": "Siz adamsınız kardeşim Spoofer gerçekten çalışıyor tavsiye ederim.", "stars": 5, "user": "Kerem#3331" },
+            { "text": "sağdaki orjinal soldaki spoof sonrası seri numaralar hepsi değişti eline sağlık neo kardeşim başarılarının devamını dilerim", "stars": 5, "user": "Umut#5502" },
+            { "text": "Van 152 banımı kaldırdılar", "stars": 5, "user": "Eren#8847" },
+            { "text": "hızlıca yardımcı oldular çok teşekkür ederim", "stars": 5, "user": "Aras#2293" },
+            { "text": "piyasanın en kaliteli spooferi", "stars": 5, "user": "Doruk#6615" },
+            { "text": "Hızlı bi şekilde van152 kalktı 10 numara hizmet, ticketta çok iyi yardımcı oluyorlar", "stars": 5, "user": "Çağrı#1178" },
+            { "text": "2-3 dakikada van 152 banım açıldı gerçekten çok şaşırdım mavera,hwidplus gibi firmalara paranızı kaptırmayın gelin buradan alın", "stars": 5, "user": "Metehan#9934" },
+            { "text": "sorunsuz urun hemen destekte oluyorlar alan bal almayan mal", "stars": 5, "user": "Barış#4466" }
         ];
 
         let vouchesList = [];
@@ -1957,38 +1964,25 @@
             }));
         }
 
-        async function loadVouches() {
-            try {
-                // Try to load reviews dynamically
-                const response = await fetch('vouches.json').catch(() => null);
-                if (response && response.ok) {
-                    const rawData = await response.json();
-                    vouchesList = rawData.map(v => ({
-                        text: cleanVouchText(v.text),
-                        stars: v.stars || 5
-                    }));
-                } else {
-                    // Fall back to clean array if not in localStorage or if request fails
-                    if (!localStorage.getItem('ring0_vouches')) {
-                        vouchesList = JSON.parse(JSON.stringify(fallbackVouches));
-                    }
-                }
+        function loadVouches() {
+            // Yorumları doğrudan koddan yükle (JSON dosyasından değil)
+            if (!vouchesList || vouchesList.length === 0) {
+                vouchesList = JSON.parse(JSON.stringify(fallbackVouches));
+            }
 
-                const track = document.getElementById('vouchesTrack');
-                if (track) {
-                    let html = '';
-                    for (let i = 0; i < 2; i++) {
-                        html += '<div class="vouches-group">';
-                        vouchesList.forEach(v => {
-                            let starsHtml = '★'.repeat(v.stars || 5) + '☆'.repeat(5 - (v.stars || 5));
-                            html += `<div class="vouch-card"><div class="vouch-text">${v.text}</div><div class="stars">${starsHtml}</div></div>`;
-                        });
-                        html += '</div>';
-                    }
-                    track.innerHTML = html;
+            const track = document.getElementById('vouchesTrack');
+            if (track) {
+                let html = '';
+                for (let i = 0; i < 2; i++) {
+                    html += '<div class="vouches-group">';
+                    vouchesList.forEach(v => {
+                        let starsHtml = '★'.repeat(v.stars || 5) + '☆'.repeat(5 - (v.stars || 5));
+                        const userName = v.user || 'Müşteri';
+                        html += `<div class="vouch-card"><div class="vouch-user" style="color: var(--neon-mint); font-size: 0.7rem; font-weight: 600; margin-bottom: 6px; opacity: 0.85;"><i class="fa-solid fa-user" style="margin-right: 4px;"></i>${userName}</div><div class="vouch-text">${v.text}</div><div class="stars">${starsHtml}</div></div>`;
+                    });
+                    html += '</div>';
                 }
-            } catch (e) {
-                console.log("Vouchlar yüklenemedi:", e);
+                track.innerHTML = html;
             }
         }
 
